@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Breaker } from "./Breaker";
+import { RowCapacityInput } from "./RowCapacityInput";
 import { getRowUsedModules } from "../utils/boardOperations";
+import { createMobileSegments } from "../utils/mobileSegments";
 
 export function BoardRow({
   row,
@@ -150,60 +152,5 @@ export function BoardRow({
         </button>
       </div>
     </section>
-  );
-}
-
-function createMobileSegments(breakers, segmentSize = 12) {
-  if (breakers.length === 0) return [];
-
-  const segments = [];
-  let currentSegment = createSegment(1, segmentSize);
-
-  breakers.forEach((breaker) => {
-    const modules = Number(breaker.poles) || 1;
-    const wouldOverflow = currentSegment.used > 0 && currentSegment.used + modules > segmentSize;
-
-    if (wouldOverflow) {
-      segments.push(currentSegment);
-      currentSegment = createSegment(currentSegment.end + 1, segmentSize);
-    }
-
-    currentSegment.breakers.push(breaker);
-    currentSegment.used += modules;
-
-    while (currentSegment.used > segmentSize) {
-      currentSegment.end += segmentSize;
-    }
-  });
-
-  segments.push(currentSegment);
-  return segments;
-}
-
-function createSegment(start, segmentSize) {
-  return {
-    start,
-    end: start + segmentSize - 1,
-    used: 0,
-    breakers: [],
-  };
-}
-
-function RowCapacityInput({ rowId, capacity, onUpdateRowCapacity }) {
-  const value = Math.max(1, Math.min(50, Number(capacity) || 1));
-
-  return (
-    <div className="row-capacity-control">
-      <span>Modula</span>
-      <span className="module-stepper">
-        <button type="button" className="ghost" aria-label="Smanji broj modula" disabled={value <= 1} onClick={() => onUpdateRowCapacity(rowId, value - 1)}>
-          -
-        </button>
-        <input type="text" value={value} readOnly tabIndex={-1} aria-label="Broj modula" />
-        <button type="button" className="ghost" aria-label="Povecaj broj modula" disabled={value >= 50} onClick={() => onUpdateRowCapacity(rowId, value + 1)}>
-          +
-        </button>
-      </span>
-    </div>
   );
 }

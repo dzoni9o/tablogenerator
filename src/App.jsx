@@ -8,7 +8,6 @@ import { RecentProjects } from "./components/RecentProjects";
 import { TemplatePicker } from "./components/TemplatePicker";
 import { Topbar } from "./components/Topbar";
 import { useBoardProject } from "./hooks/useBoardProject";
-import { exportBoardPdf } from "./utils/exportPdf";
 
 export default function App() {
   const boardRef = useRef(null);
@@ -82,6 +81,7 @@ export default function App() {
           onExportPdf={async () => {
             try {
               setExportError("");
+              const { exportBoardPdf } = await import("./utils/exportPdf");
               await exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance, {
                 includePhaseBalance: printPhaseBalance,
               });

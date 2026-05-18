@@ -60,4 +60,15 @@ describe("project storage", () => {
 
     expect(readRecentProjects()).toHaveLength(0);
   });
+
+  it("allows a changed project to appear after an old recent entry was deleted", () => {
+    const rows = [{ id: "r1", name: "Red 1", capacity: 12, breakers: [] }];
+    const projectInfo = { objectName: "Objekat" };
+    const savedAt = saveProjectToLocalStorage("Tabla", rows, projectInfo);
+
+    deleteRecentProject(savedAt);
+    saveProjectToLocalStorage("Tabla", [{ ...rows[0], capacity: 18 }], projectInfo);
+
+    expect(readRecentProjects()).toHaveLength(1);
+  });
 });

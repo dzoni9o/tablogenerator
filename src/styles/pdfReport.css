@@ -1,0 +1,350 @@
+.pdf-export {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 1120px;
+  background: #ffffff;
+  color: #0a0a0a;
+  font-family:
+    "Space Grotesk", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 34px 34px 42px;
+}
+
+.pdf-report {
+  display: grid;
+  gap: 22px;
+}
+
+.pdf-cover {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  align-items: stretch;
+  border-bottom: 4px solid #ffd60a;
+  padding-bottom: 18px;
+}
+
+.pdf-brand {
+  display: grid;
+  align-content: space-between;
+  border: 1px solid #0a0a0a;
+  border-radius: 8px;
+  min-height: 132px;
+  padding: 18px;
+}
+
+.pdf-brand > span {
+  color: #0a0a0a;
+  font-size: 39px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.pdf-brand > span em {
+  color: #ffd60a;
+  font-style: normal;
+}
+
+.pdf-brand small {
+  color: #0a0a0a8c;
+  font-size: 13px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pdf-title-block {
+  display: grid;
+  align-content: center;
+  background: #f4f4ef;
+  border: 1px solid #0a0a0a1a;
+  border-radius: 8px;
+  padding: 22px 24px;
+}
+
+.pdf-title-block p,
+.pdf-section-title span {
+  color: #0a0a0a8c;
+  font-size: 12px;
+  font-weight: 850;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.pdf-title-block h1 {
+  color: #0a0a0a;
+  font-size: 34px;
+  line-height: 1.08;
+  margin: 7px 0 0;
+}
+
+.pdf-meta-panel,
+.pdf-board-layout,
+.pdf-element-table {
+  border: 1px solid #0a0a0a1a;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.pdf-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.pdf-meta div {
+  display: grid;
+  gap: 4px;
+  background: #f4f4ef;
+  border-radius: 7px;
+  min-height: 64px;
+  padding: 10px;
+}
+
+.pdf-meta dt {
+  color: #0a0a0a8c;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pdf-meta dd {
+  color: #0a0a0a;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.pdf-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.pdf-summary div,
+.pdf-phase-balance span,
+.pdf-phase-balance em,
+.pdf-phase-balance strong {
+  border: 1px solid #0a0a0a1a;
+  border-radius: 8px;
+  background: #fff6cc;
+  padding: 12px;
+}
+
+.pdf-summary span {
+  display: block;
+  color: #0a0a0a8c;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pdf-summary strong {
+  display: block;
+  color: #0a0a0a;
+  font-size: 20px;
+  line-height: 1.1;
+  margin-top: 5px;
+}
+
+.pdf-phase-balance {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(4, 1fr);
+  gap: 10px;
+}
+
+.pdf-phase-balance.warning strong,
+.pdf-phase-balance.warning span,
+.pdf-phase-balance.warning em {
+  background: #ffedea;
+  border-color: rgba(238, 54, 47, 0.35);
+}
+
+.pdf-phase-balance strong,
+.pdf-phase-balance span,
+.pdf-phase-balance em {
+  color: #0a0a0a;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.pdf-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #0a0a0a1a;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+}
+
+.pdf-section-title span {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #ffd60a;
+  color: #0a0a0a;
+}
+
+.pdf-section-title h2 {
+  font-size: 19px;
+  margin: 0;
+}
+
+.pdf-rows {
+  display: grid;
+  gap: 18px;
+}
+
+.pdf-row {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.pdf-row header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 7px;
+}
+
+.pdf-row header span {
+  color: #0a0a0a8c;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pdf-row header h3 {
+  font-size: 16px;
+  margin: 2px 0 0;
+}
+
+.pdf-row header strong {
+  border: 1px solid #0a0a0a1a;
+  border-radius: 999px;
+  background: #fff6cc;
+  font-size: 12px;
+  padding: 7px 10px;
+}
+
+.pdf-breaker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  border: 1px solid #b8bec6;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(10, 10, 10, 0.05) 1px, transparent 1px) 0 0 / 18px 100%,
+    #f4f4ef;
+  padding: 12px;
+}
+
+.pdf-breaker {
+  --module-width: 50px;
+  width: calc((var(--module-width) * var(--module-span, 1)) + (5px * (var(--module-span, 1) - 1)));
+  min-height: 128px;
+  display: grid;
+  grid-template-rows: 24px 16px 15px 16px 1fr;
+  align-items: center;
+  border: 1px solid #b8bec6;
+  border-radius: 5px;
+  background: linear-gradient(#ffffff, #f4f4ef);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    inset -4px 0 0 rgba(10, 10, 10, 0.05),
+    0 1px 2px rgba(10, 10, 10, 0.1);
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.pdf-breaker.fid {
+  background: linear-gradient(#ffffff, #fff6cc);
+}
+
+.pdf-breaker strong {
+  border-top: 1px solid #0a0a0a1a;
+  border-bottom: 1px solid #0a0a0a1a;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.pdf-breaker span,
+.pdf-breaker em,
+.pdf-breaker small {
+  overflow: hidden;
+  color: #0a0a0a8c;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 850;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-breaker p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #0a0a0a;
+  font-size: 8px;
+  font-weight: 750;
+  line-height: 1.08;
+  margin: 3px 0 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.pdf-empty-row {
+  color: #0a0a0a8c;
+  font-size: 13px;
+  font-weight: 750;
+  margin: 0;
+}
+
+.pdf-element-table table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.pdf-element-table th,
+.pdf-element-table td {
+  border: 1px solid #0a0a0a1a;
+  font-size: 10px;
+  line-height: 1.25;
+  padding: 6px 7px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pdf-element-table th {
+  background: #fff6cc;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pdf-element-table td:nth-child(9) {
+  width: 25%;
+}
+
+.pdf-signatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: 10px;
+}
+
+.pdf-signatures div {
+  border-top: 1px solid #0a0a0a;
+  min-height: 58px;
+  padding-top: 8px;
+}
+
+.pdf-signatures span {
+  color: #0a0a0a8c;
+  font-size: 11px;
+  font-weight: 850;
+}

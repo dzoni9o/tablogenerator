@@ -29,6 +29,10 @@ export function ProjectDetails({ projectInfo, onUpdate }) {
           Datum
           <input type="date" value={projectInfo.date} onChange={(event) => onUpdate("date", event.target.value)} />
         </label>
+        <label className="field-wide">
+          Napomena
+          <textarea rows={3} value={projectInfo.note} onChange={(event) => onUpdate("note", event.target.value)} />
+        </label>
       </div>
     </section>
   );

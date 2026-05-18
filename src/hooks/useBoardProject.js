@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createBlankRows, createInitialRows, defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
 import { createRowsFromTemplate } from "../data/templates";
@@ -14,14 +14,9 @@ import {
   moveBreaker,
 } from "../utils/boardOperations";
 import { calculatePhaseBalance } from "../utils/phaseBalance";
-import {
-  deleteRecentProject,
-  downloadProjectJson,
-  parseProjectJson,
-  readRecentProjects,
-  readSavedProject,
-  saveProjectToLocalStorage,
-} from "../utils/projectStorage";
+import { useProjectAutosave } from "./useProjectAutosave";
+import { useTimedMessage } from "./useTimedMessage";
+import { downloadProjectJson, parseProjectJson, readSavedProject } from "../utils/projectStorage";
 import { createId } from "../utils/ids";
 
 export function useBoardProject() {
@@ -38,12 +33,11 @@ export function useBoardProject() {
   const [fidTargetRow, setFidTargetRow] = useState(null);
   const [pendingFidPhase, setPendingFidPhase] = useState(null);
   const [catalogTargetRow, setCatalogTargetRow] = useState(null);
-  const [autosavedAt, setAutosavedAt] = useState(null);
   const [importError, setImportError] = useState("");
-  const [capacityMessage, setCapacityMessage] = useState(null);
-  const [recentProjects, setRecentProjects] = useState(() => readRecentProjects());
+  const [capacityMessage, setCapacityMessage] = useTimedMessage(2000);
   const [pastRows, setPastRows] = useState([]);
   const [futureRows, setFutureRows] = useState([]);
+  const { autosavedAt, recentProjects, removeRecentProject } = useProjectAutosave(boardName, rows, projectInfo);
 
   const selectedBreaker = useMemo(() => findBreaker(rows, selected), [rows, selected]);
   const selectedRow = useMemo(() => findBreakerRow(rows, selected), [rows, selected]);
@@ -51,25 +45,6 @@ export function useBoardProject() {
   const usedModules = useMemo(() => getTotalUsedModules(rows), [rows]);
   const totalCapacity = useMemo(() => getTotalCapacity(rows), [rows]);
   const phaseBalance = useMemo(() => calculatePhaseBalance(rows), [rows]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setAutosavedAt(saveProjectToLocalStorage(boardName, rows, projectInfo));
-      setRecentProjects(readRecentProjects());
-    }, 350);
-
-    return () => window.clearTimeout(timer);
-  }, [boardName, rows, projectInfo]);
-
-  useEffect(() => {
-    if (!capacityMessage) return;
-
-    const timer = window.setTimeout(() => {
-      setCapacityMessage(null);
-    }, 2000);
-
-    return () => window.clearTimeout(timer);
-  }, [capacityMessage]);
 
   function commitRows(updater) {
     setRows((current) => {
@@ -360,10 +335,6 @@ export function useBoardProject() {
     } catch {
       setImportError("Ne mogu da ucitam sacuvani projekat.");
     }
-  }
-
-  function removeRecentProject(savedAt) {
-    setRecentProjects(deleteRecentProject(savedAt));
   }
 
   function newProject() {

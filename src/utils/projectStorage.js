@@ -181,5 +181,9 @@ function readRecentProjectsRaw() {
 }
 
 function getRecentIdentity(item) {
-  return [item.boardName || "", item.objectName || item.project?.projectInfo?.objectName || ""].join("::");
+  return JSON.stringify({
+    boardName: item.boardName || "",
+    objectName: item.objectName || item.project?.projectInfo?.objectName || "",
+    rows: item.project?.rows || [],
+  });
 }
