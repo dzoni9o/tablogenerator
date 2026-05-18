@@ -3,7 +3,16 @@ import { createInitialRows, defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
 import { createRowsFromTemplate } from "../data/templates";
 import { createCatalogBreaker, createFid, createNeutralSwitch, getAmpLimit, labelLimit, descriptionLimit } from "../utils/breakerFactory";
-import { findBreaker, findBreakerRow, getBreakerCount, getTotalCapacity, getTotalUsedModules, moveBreaker } from "../utils/boardOperations";
+import {
+  canFitBreaker,
+  canMoveBreaker,
+  findBreaker,
+  findBreakerRow,
+  getBreakerCount,
+  getTotalCapacity,
+  getTotalUsedModules,
+  moveBreaker,
+} from "../utils/boardOperations";
 import { calculatePhaseBalance } from "../utils/phaseBalance";
 import { downloadProjectJson, parseProjectJson, readRecentProjects, readSavedProject, saveProjectToLocalStorage } from "../utils/projectStorage";
 import { createId } from "../utils/ids";
@@ -24,6 +33,7 @@ export function useBoardProject() {
   const [catalogTargetRow, setCatalogTargetRow] = useState(null);
   const [autosavedAt, setAutosavedAt] = useState(null);
   const [importError, setImportError] = useState("");
+  const [capacityMessage, setCapacityMessage] = useState("");
   const [recentProjects, setRecentProjects] = useState(() => readRecentProjects());
   const [pastRows, setPastRows] = useState([]);
   const [futureRows, setFutureRows] = useState([]);
@@ -50,6 +60,10 @@ export function useBoardProject() {
       setFutureRows([]);
       return typeof updater === "function" ? updater(current) : updater;
     });
+  }
+
+  function showCapacityMessage(row, breaker) {
+    setCapacityMessage(`${row.name || "Red"} ima kapacitet ${row.capacity}M. Element ${breaker.label || breaker.type} zauzima ${breaker.poles || 1}M.`);
   }
 
   function updateProjectInfo(field, value) {
@@ -83,12 +97,21 @@ export function useBoardProject() {
   }
 
   function addCatalogItem(rowId, type) {
+    const targetRow = rows.find((row) => row.id === rowId);
+    const sameTypeCount = rows.flatMap((currentRow) => currentRow.breakers).filter((breaker) => breaker.type === type).length + 1;
+    const breaker = createCatalogBreaker(type, sameTypeCount);
+
+    if (!targetRow || !canFitBreaker(targetRow, breaker)) {
+      if (targetRow) showCapacityMessage(targetRow, breaker);
+      setCatalogTargetRow(null);
+      return;
+    }
+
     commitRows((current) =>
       current.map((row) => {
         if (row.id !== rowId) return row;
 
-        const sameTypeCount = current.flatMap((currentRow) => currentRow.breakers).filter((breaker) => breaker.type === type).length + 1;
-        const breaker = createCatalogBreaker(type, sameTypeCount);
+        setCapacityMessage("");
         setSelected(breaker.id);
         return { ...row, breakers: [...row.breakers, breaker] };
       }),
@@ -101,21 +124,35 @@ export function useBoardProject() {
   }
 
   function addFid(rowId, phase, withNeutral = false) {
+    const targetRow = rows.find((row) => row.id === rowId);
+    const allBreakers = rows.flatMap((currentRow) => currentRow.breakers);
+    const fidCount = allBreakers.filter((breaker) => breaker.type === "fid").length + 1;
+    const fid = createFid(phase, fidCount);
+    const neutralCount = allBreakers.filter((breaker) => breaker.type === "neutral").length + 1;
+    const neutral = createNeutralSwitch(neutralCount, fid.id);
+    const newBreakers = withNeutral ? [fid, neutral] : [fid];
+    const neededModules = newBreakers.reduce((total, breaker) => total + (Number(breaker.poles) || 1), 0);
+    const freeModules = targetRow
+      ? (Number(targetRow.capacity) || 0) - targetRow.breakers.reduce((total, breaker) => total + (Number(breaker.poles) || 1), 0)
+      : 0;
+
+    if (!targetRow || neededModules > freeModules) {
+      if (targetRow) setCapacityMessage(`${targetRow.name || "Red"} ima slobodno ${freeModules}M, a FID kombinacija trazi ${neededModules}M.`);
+      setFidTargetRow(null);
+      setPendingFidPhase(null);
+      return;
+    }
+
     commitRows((current) =>
       current.map((row) => {
         if (row.id !== rowId) return row;
 
-        const allBreakers = current.flatMap((currentRow) => currentRow.breakers);
-        const fidCount = allBreakers.filter((breaker) => breaker.type === "fid").length + 1;
-        const fid = createFid(phase, fidCount);
-        const neutralCount = allBreakers.filter((breaker) => breaker.type === "neutral").length + 1;
-        const neutral = createNeutralSwitch(neutralCount, fid.id);
-
         setSelected(fid.id);
+        setCapacityMessage("");
         setEditorOpen(false);
         setFidTargetRow(null);
         setPendingFidPhase(null);
-        return { ...row, breakers: withNeutral ? [...row.breakers, fid, neutral] : [...row.breakers, fid] };
+        return { ...row, breakers: [...row.breakers, ...newBreakers] };
       }),
     );
   }
@@ -221,8 +258,17 @@ export function useBoardProject() {
       return;
     }
 
+    if (!canMoveBreaker(rows, draggedId, rowId)) {
+      const targetRow = rows.find((row) => row.id === rowId);
+      const breaker = findBreaker(rows, draggedId);
+      if (targetRow && breaker) showCapacityMessage(targetRow, breaker);
+      clearDrag();
+      return;
+    }
+
     commitRows((current) => moveBreaker(current, draggedId, rowId, breakerId));
     setSelected(draggedId);
+    setCapacityMessage("");
     clearDrag();
   }
 
@@ -335,6 +381,7 @@ export function useBoardProject() {
     catalogTargetRow,
     autosavedAt,
     importError,
+    capacityMessage,
     recentProjects,
     canUndo: pastRows.length > 0,
     canRedo: futureRows.length > 0,

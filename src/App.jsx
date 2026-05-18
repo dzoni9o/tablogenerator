@@ -46,6 +46,7 @@ export default function App() {
       />
 
       {project.importError && <p className="import-error">{project.importError}</p>}
+      {project.capacityMessage && <p className="capacity-error">{project.capacityMessage}</p>}
 
       <ProjectDetails projectInfo={project.projectInfo} onUpdate={project.updateProjectInfo} />
       <TemplatePicker onApply={project.applyTemplate} />

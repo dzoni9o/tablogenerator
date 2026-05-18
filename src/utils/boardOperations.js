@@ -27,6 +27,20 @@ export function moveBreaker(rows, breakerId, targetRowId, targetBreakerId = null
   });
 }
 
+export function canFitBreaker(row, breaker) {
+  return getRowUsedModules(row) + (Number(breaker?.poles) || 1) <= (Number(row.capacity) || 0);
+}
+
+export function canMoveBreaker(rows, breakerId, targetRowId) {
+  const breaker = findBreaker(rows, breakerId);
+  const sourceRow = findBreakerRow(rows, breakerId);
+  const targetRow = rows.find((row) => row.id === targetRowId);
+
+  if (!breaker || !targetRow) return false;
+  if (sourceRow?.id === targetRowId) return true;
+  return canFitBreaker(targetRow, breaker);
+}
+
 export function getBreakerCount(rows) {
   return rows.reduce((total, row) => total + row.breakers.length, 0);
 }

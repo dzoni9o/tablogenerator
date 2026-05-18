@@ -174,7 +174,8 @@ textarea[readonly] {
   overflow: hidden;
 }
 
-.import-error {
+.import-error,
+.capacity-error {
   border-bottom: 1px solid rgba(238, 54, 47, 0.2);
   background: var(--emergency-soft);
   color: var(--emergency);
