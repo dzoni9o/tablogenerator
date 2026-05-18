@@ -341,15 +341,15 @@ textarea[readonly] {
 .breaker-row {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 4px;
-  min-height: 178px;
-  overflow-x: auto;
+  min-height: 0;
+  overflow: visible;
   border: 1px solid var(--border);
   border-radius: 7px;
   background:
     linear-gradient(90deg, rgba(10, 10, 10, 0.06) 1px, transparent 1px) 0 0 / 18px 100%,
-    linear-gradient(rgba(255, 214, 10, 0.62), rgba(255, 214, 10, 0.62)) 0 82px / 100% 14px no-repeat,
     var(--muted);
   padding: 16px 14px;
   transition:
@@ -360,7 +360,6 @@ textarea[readonly] {
 .breaker-row.row-drop-target {
   background:
     linear-gradient(90deg, rgba(10, 10, 10, 0.08) 1px, transparent 1px) 0 0 / 18px 100%,
-    linear-gradient(var(--brand), var(--brand)) 0 82px / 100% 14px no-repeat,
     var(--brand-soft);
   box-shadow: inset 0 0 0 1px var(--brand);
 }
@@ -841,7 +840,7 @@ label {
     0 1px 2px rgba(23, 26, 31, 0.12);
 }
 
-@media (max-width: 620px) {
+@media (max-width: 900px) {
   .topbar,
   .recent-projects,
   .row-toolbar,
@@ -863,6 +862,26 @@ label {
 
   .board-name {
     width: 100%;
+  }
+
+  .board {
+    overflow: visible;
+    padding: 16px;
+  }
+
+  .row {
+    padding: 14px;
+  }
+
+  .phase-balance {
+    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .phase-balance strong,
+  .phase-balance em {
+    grid-column: 1 / -1;
   }
 
   .template-options {
