@@ -1,4 +1,4 @@
-export async function exportBoardPdf(boardNode, boardName) {
+export async function exportBoardPdf(boardNode, boardName, projectInfo = {}, rows = [], phaseBalance = null) {
   if (!boardNode) return;
 
   const [{ jsPDF }, html2canvasModule] = await Promise.all([import("jspdf"), import("html2canvas")]);
@@ -6,13 +6,40 @@ export async function exportBoardPdf(boardNode, boardName) {
   const exportNode = boardNode.cloneNode(true);
   const exportWrap = document.createElement("div");
   const title = document.createElement("h1");
+  const brand = document.createElement("div");
+  const meta = document.createElement("dl");
+  const elementTable = document.createElement("section");
+  const signatures = document.createElement("section");
 
   title.textContent = boardName || "Nova tabla";
   exportWrap.className = "pdf-export";
+  brand.className = "pdf-brand";
+  brand.innerHTML = `<span>nik<span>·</span>volt</span><strong>Tablo Generator</strong>`;
+  meta.className = "pdf-meta";
+  meta.innerHTML = [
+    ["Objekat", projectInfo.objectName],
+    ["Adresa", projectInfo.address],
+    ["Investitor", projectInfo.investor],
+    ["Instalater", projectInfo.installer],
+    ["Broj dokumenta", projectInfo.documentNumber],
+    ["Datum", projectInfo.date],
+    ["Napomena", projectInfo.note],
+  ]
+    .filter(([, value]) => value)
+    .map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`)
+    .join("");
+  elementTable.className = "pdf-element-table";
+  elementTable.innerHTML = createElementTable(rows, phaseBalance);
+  signatures.className = "pdf-signatures";
+  signatures.innerHTML = `
+    <div><span>Instalater</span></div>
+    <div><span>Odgovorno lice / investitor</span></div>
+    <div><span>Napomena / pecat</span></div>
+  `;
   exportNode.querySelector(".board-head")?.remove();
   exportNode.querySelectorAll(".row-toolbar").forEach((node) => node.remove());
   exportNode.querySelectorAll(".breaker.active").forEach((node) => node.classList.remove("active"));
-  exportWrap.append(title, exportNode);
+  exportWrap.append(brand, title, meta, exportNode, elementTable, signatures);
   document.body.append(exportWrap);
 
   try {
@@ -62,4 +89,54 @@ export async function exportBoardPdf(boardNode, boardName) {
 
 function safeFileName(value) {
   return value.replace(/[\\/:*?"<>|]/g, "-").trim() || "tabla";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function createElementTable(rows, phaseBalance) {
+  const rowsHtml = rows
+    .flatMap((row) =>
+      row.breakers.map(
+        (breaker) => `
+          <tr>
+            <td>${escapeHtml(row.name)}</td>
+            <td>${escapeHtml(breaker.label)}</td>
+            <td>${escapeHtml(breaker.amp)}</td>
+            <td>${escapeHtml(breaker.phase || "-")}</td>
+            <td>${escapeHtml(breaker.loadKw || "-")}</td>
+            <td>${escapeHtml(breaker.poles || 1)}M</td>
+            <td>${escapeHtml(breaker.description || "")}</td>
+          </tr>
+        `,
+      ),
+    )
+    .join("");
+  const balance = phaseBalance
+    ? `<p>Balans: L1 ${phaseBalance.totals.L1.toFixed(1)} kW · L2 ${phaseBalance.totals.L2.toFixed(1)} kW · L3 ${phaseBalance.totals.L3.toFixed(1)} kW · razlika ${phaseBalance.spread.toFixed(1)} kW</p>`
+    : "";
+
+  return `
+    <h2>Lista elemenata</h2>
+    ${balance}
+    <table>
+      <thead>
+        <tr>
+          <th>Red</th>
+          <th>Oznaka</th>
+          <th>Amp.</th>
+          <th>Faza</th>
+          <th>kW</th>
+          <th>Mod.</th>
+          <th>Opis</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  `;
 }

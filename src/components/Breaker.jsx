@@ -34,7 +34,10 @@ export function Breaker({
       onDrop={onDrop}
     >
       <strong>{breaker.amp || "-"}</strong>
-      <span className="breaker-label">{breaker.label || "-"}</span>
+      <span className="breaker-label">
+        {breaker.label || "-"}
+        {breaker.phase && breaker.phase !== "none" ? <em>{breaker.phase}</em> : null}
+      </span>
       {breaker.icon !== "none" ? (
         <span className="icon-slot" aria-hidden="true">
           <ConsumerIcon name={breaker.icon} />
@@ -42,7 +45,7 @@ export function Breaker({
       ) : (
         <span className="icon-slot empty" aria-hidden="true" />
       )}
-      <small>{breaker.description || "Bez opisa"}</small>
+      <small>{breaker.loadKw ? `${breaker.loadKw} kW · ${breaker.description || "Bez opisa"}` : breaker.description || "Bez opisa"}</small>
     </button>
   );
 }

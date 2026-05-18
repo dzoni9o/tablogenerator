@@ -31,6 +31,18 @@ export function getBreakerCount(rows) {
   return rows.reduce((total, row) => total + row.breakers.length, 0);
 }
 
+export function getRowUsedModules(row) {
+  return row.breakers.reduce((total, breaker) => total + (Number(breaker.poles) || 1), 0);
+}
+
+export function getTotalUsedModules(rows) {
+  return rows.reduce((total, row) => total + getRowUsedModules(row), 0);
+}
+
+export function getTotalCapacity(rows) {
+  return rows.reduce((total, row) => total + (Number(row.capacity) || 0), 0);
+}
+
 export function findBreaker(rows, breakerId) {
   return rows.flatMap((row) => row.breakers).find((breaker) => breaker.id === breakerId) ?? null;
 }

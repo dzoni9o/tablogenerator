@@ -1,5 +1,6 @@
 import { consumerIcons } from "../data/consumerIcons";
 import { descriptionLimit, getAmpLimit, labelLimit } from "../utils/breakerFactory";
+import { phaseOptions } from "../utils/phaseBalance";
 
 export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove, onSave, onUpdate }) {
   if (!selectedBreaker || !selectedRow) return null;
@@ -29,6 +30,26 @@ export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove,
             onChange={(event) => onUpdate("amp", event.target.value)}
           />
         </label>
+        <div className="editor-grid">
+          <label>
+            Faza
+            <select value={selectedBreaker.phase || "none"} onChange={(event) => onUpdate("phase", event.target.value)}>
+              {phaseOptions.map((phase) => (
+                <option key={phase.value} value={phase.value}>
+                  {phase.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Snaga kW
+            <input
+              inputMode="decimal"
+              value={selectedBreaker.loadKw || ""}
+              onChange={(event) => onUpdate("loadKw", event.target.value.replace(",", ".").slice(0, 6))}
+            />
+          </label>
+        </div>
         <label>
           Opis za korisnika
           <textarea

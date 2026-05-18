@@ -10,5 +10,11 @@ export const consumerIcons = [
   { id: "pump", label: "Pumpa", path: "M5 13h8a4 4 0 0 0 0-8H9v8m4 0 5 5m-9-9h4m-8 8h5" },
   { id: "shield", label: "Zastita", path: "M12 3 19 6v5c0 5-3 8-7 10c-4-2-7-5-7-10V6l7-3Zm-3 8 2 2 4-5" },
   { id: "bell", label: "Zvonce", path: "M15 17H9m6 0a3 3 0 0 1-6 0m6 0h4l-2-3V9a5 5 0 0 0-10 0v5l-2 3h4m3-14V2" },
+  { id: "switch", label: "Prekidac", path: "M6 5h12v14H6V5Zm3 3h6m-3 3v5m-2-2h4" },
+  { id: "bolt", label: "Prenapon", path: "M13 2 4 14h7l-1 8 9-12h-7l1-8Z" },
+  { id: "contactor", label: "Kontaktor", path: "M5 5h14v14H5V5Zm3 4h8M8 15h3m2 0h3M10 9v6m4-6v6" },
+  { id: "timer", label: "Tajmer", path: "M12 8v5l3 2M8 2h8M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z" },
+  { id: "relay", label: "Relej", path: "M4 7h7v10H4V7Zm9 2h7m-7 6h7m-4-6v6M7 10h1m-1 4h1" },
+  { id: "busbar", label: "Sabirnica", path: "M4 8h16M4 16h16M7 5v6m5-6v6m5-6v6M7 13v6m5-6v6m5-6v6" },
   { id: "general", label: "Ostalo", path: "M12 5v14m-7-7h14" },
 ];

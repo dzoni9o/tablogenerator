@@ -1,4 +1,5 @@
 import { Breaker } from "./Breaker";
+import { getRowUsedModules } from "../utils/boardOperations";
 
 export function BoardRow({
   row,
@@ -8,21 +9,44 @@ export function BoardRow({
   onAddBreaker,
   onAddFid,
   onAddBell,
+  onAddElement,
   onRemoveRow,
   onRenameRow,
+  onUpdateRowCapacity,
   onSelectBreaker,
   onDragStart,
   onDragEnd,
   onAllowDrop,
   onDropBreaker,
 }) {
+  const usedModules = getRowUsedModules(row);
+  const isOverCapacity = usedModules > row.capacity;
+
   return (
-    <section className="row" data-row-name={row.name || "Red"}>
+    <section className={isOverCapacity ? "row row-over-capacity" : "row"} data-row-name={row.name || "Red"}>
       <div className="row-toolbar">
-        <input aria-label="Naziv reda" value={row.name} onChange={(event) => onRenameRow(row.id, event.target.value)} />
+        <div className="row-meta">
+          <input aria-label="Naziv reda" value={row.name} onChange={(event) => onRenameRow(row.id, event.target.value)} />
+          <label>
+            Modula
+            <input
+              type="number"
+              min="1"
+              max="72"
+              value={row.capacity}
+              onChange={(event) => onUpdateRowCapacity(row.id, event.target.value)}
+            />
+          </label>
+          <span className={isOverCapacity ? "capacity-pill warning" : "capacity-pill"}>
+            {usedModules}/{row.capacity}M
+          </span>
+        </div>
         <div>
           <button type="button" onClick={() => onAddBreaker(row.id)}>
             + Osigurac
+          </button>
+          <button type="button" className="ghost" onClick={() => onAddElement(row.id)}>
+            + Element
           </button>
           <button type="button" className="ghost" onClick={() => onAddFid(row.id)}>
             + FID

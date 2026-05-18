@@ -1,7 +1,11 @@
 import { useRef } from "react";
 import { Board } from "./components/Board";
 import { BreakerEditor } from "./components/BreakerEditor";
+import { CatalogModal } from "./components/CatalogModal";
 import { FidChoiceModal } from "./components/FidChoiceModal";
+import { ProjectDetails } from "./components/ProjectDetails";
+import { RecentProjects } from "./components/RecentProjects";
+import { TemplatePicker } from "./components/TemplatePicker";
 import { Topbar } from "./components/Topbar";
 import { useBoardProject } from "./hooks/useBoardProject";
 import { exportBoardPdf } from "./utils/exportPdf";
@@ -19,9 +23,15 @@ export default function App() {
       <Topbar
         boardName={project.boardName}
         autosaveLabel={autosaveLabel}
+        canRedo={project.canRedo}
+        canUndo={project.canUndo}
         onBoardNameChange={project.setBoardName}
+        onDuplicateProject={project.duplicateProject}
         onExportJson={project.exportJson}
         onImportClick={() => fileInputRef.current?.click()}
+        onNewProject={project.newProject}
+        onRedo={project.redo}
+        onUndo={project.undo}
       />
 
       <input
@@ -37,24 +47,33 @@ export default function App() {
 
       {project.importError && <p className="import-error">{project.importError}</p>}
 
+      <ProjectDetails projectInfo={project.projectInfo} onUpdate={project.updateProjectInfo} />
+      <TemplatePicker onApply={project.applyTemplate} />
+      <RecentProjects items={project.recentProjects} onLoad={project.loadProject} />
+
       <section className="workspace">
         <Board
           boardRef={boardRef}
           boardName={project.boardName}
           rows={project.rows}
           breakerCount={project.breakerCount}
+          totalCapacity={project.totalCapacity}
+          usedModules={project.usedModules}
+          phaseBalance={project.phaseBalance}
           selectedId={project.selected}
           draggingId={project.dragging}
           dropTarget={project.dropTarget}
           onAddRow={project.addRow}
           onPrint={() => window.print()}
-          onExportPdf={() => exportBoardPdf(boardRef.current, project.boardName)}
+          onExportPdf={() => exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance)}
           rowHandlers={{
             onAddBreaker: project.addBreaker,
+            onAddElement: project.setCatalogTargetRow,
             onAddFid: project.setFidTargetRow,
             onAddBell: (rowId) => project.addSpecial(rowId, "bell"),
             onRemoveRow: project.removeRow,
             onRenameRow: project.updateRowName,
+            onUpdateRowCapacity: project.updateRowCapacity,
             onSelectBreaker: project.selectBreaker,
             onDragStart: project.startDrag,
             onDragEnd: project.clearDrag,
@@ -72,6 +91,13 @@ export default function App() {
           onRemove={project.removeBreaker}
           onSave={project.saveSelected}
           onUpdate={project.updateSelected}
+        />
+      )}
+
+      {project.catalogTargetRow && (
+        <CatalogModal
+          onAdd={(type) => project.addCatalogItem(project.catalogTargetRow, type)}
+          onClose={() => project.setCatalogTargetRow(null)}
         />
       )}
 

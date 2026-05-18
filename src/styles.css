@@ -51,6 +51,17 @@ button:hover {
   color: var(--brand-foreground);
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+button:disabled:hover {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
 button.ghost {
   background: transparent;
   color: var(--foreground);
@@ -139,6 +150,11 @@ textarea[readonly] {
   flex-wrap: wrap;
 }
 
+.icon-button {
+  min-width: 62px;
+  padding-inline: 10px;
+}
+
 .autosave-status {
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -171,6 +187,59 @@ textarea[readonly] {
   min-height: 0;
 }
 
+.project-details,
+.template-picker,
+.recent-projects {
+  border-bottom: 1px solid var(--border);
+  padding: 18px 22px;
+}
+
+.project-details {
+  display: grid;
+  gap: 16px;
+  background: var(--paper);
+}
+
+.project-details p,
+.template-picker span,
+.recent-projects span {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.project-details h2 {
+  font-size: 1.1rem;
+  margin: 4px 0 0;
+}
+
+.project-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.template-picker,
+.recent-projects {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--muted);
+}
+
+.recent-projects {
+  background: var(--paper);
+  padding-block: 12px;
+}
+
 .board {
   min-width: 0;
   overflow: auto;
@@ -188,6 +257,36 @@ textarea[readonly] {
 
 .board-head strong {
   color: var(--foreground);
+}
+
+.phase-balance {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--brand-soft);
+  margin-bottom: 16px;
+  padding: 10px 12px;
+}
+
+.phase-balance.warning {
+  background: var(--emergency-soft);
+  border-color: rgba(238, 54, 47, 0.35);
+}
+
+.phase-balance strong,
+.phase-balance span,
+.phase-balance em {
+  font-size: 0.82rem;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.phase-balance span,
+.phase-balance em {
+  color: var(--ink-soft);
 }
 
 .board-actions {
@@ -214,6 +313,13 @@ textarea[readonly] {
   justify-content: space-between;
   gap: 14px;
   margin-bottom: 12px;
+}
+
+.row-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .row-toolbar input {
@@ -258,6 +364,39 @@ textarea[readonly] {
     linear-gradient(var(--brand), var(--brand)) 0 82px / 100% 14px no-repeat,
     var(--brand-soft);
   box-shadow: inset 0 0 0 1px var(--brand);
+}
+
+.row-meta label {
+  width: 92px;
+  gap: 4px;
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.row-meta label input {
+  max-width: none;
+  border: 1px solid var(--input);
+  padding: 7px 8px;
+}
+
+.capacity-pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  font-size: 0.78rem;
+  font-weight: 850;
+  padding: 7px 10px;
+}
+
+.capacity-pill.warning {
+  background: var(--emergency-soft);
+  border-color: rgba(238, 54, 47, 0.35);
+  color: var(--emergency);
+}
+
+.row-over-capacity {
+  border-color: rgba(238, 54, 47, 0.4);
+  box-shadow: inset 0 0 0 2px rgba(238, 54, 47, 0.08);
 }
 
 .breaker {
@@ -348,6 +487,14 @@ textarea[readonly] {
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.breaker-label em {
+  display: block;
+  color: var(--foreground);
+  font-size: 0.5rem;
+  font-style: normal;
+  margin-top: 2px;
 }
 
 .icon-slot {
@@ -457,12 +604,19 @@ label {
   padding-top: 16px;
 }
 
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 .fid-options {
   display: grid;
   gap: 10px;
 }
 
-.fid-options button {
+.fid-options button,
+.catalog-grid button {
   display: grid;
   gap: 5px;
   background: var(--background);
@@ -470,14 +624,26 @@ label {
   text-align: left;
 }
 
-.fid-options button:hover {
+.fid-options button:hover,
+.catalog-grid button:hover {
   background: var(--brand-soft);
 }
 
-.fid-options span {
+.fid-options span,
+.catalog-grid span {
   color: var(--ink-soft);
   font-size: 0.84rem;
   font-weight: 650;
+}
+
+.catalog-modal {
+  width: min(100%, 720px);
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .pdf-export {
@@ -495,6 +661,115 @@ label {
   line-height: 1.1;
   margin: 0 0 24px;
   text-align: center;
+}
+
+.pdf-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid #ffd60a;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+}
+
+.pdf-brand > span {
+  color: #0a0a0a;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+}
+
+.pdf-brand > span span {
+  color: #ffd60a;
+  font-weight: 500;
+}
+
+.pdf-brand strong {
+  color: #0a0a0a8c;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.pdf-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  border: 1px solid #0a0a0a1a;
+  border-radius: 8px;
+  margin: 0 0 22px;
+  padding: 12px;
+}
+
+.pdf-meta div {
+  display: grid;
+  gap: 3px;
+}
+
+.pdf-meta dt {
+  color: #0a0a0a8c;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pdf-meta dd {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.pdf-element-table {
+  margin-top: 28px;
+}
+
+.pdf-element-table h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.pdf-element-table p {
+  color: #0a0a0a8c;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.pdf-element-table table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.pdf-element-table th,
+.pdf-element-table td {
+  border: 1px solid #0a0a0a1a;
+  font-size: 11px;
+  padding: 6px 7px;
+  text-align: left;
+}
+
+.pdf-element-table th {
+  background: #fff6cc;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pdf-signatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 34px;
+}
+
+.pdf-signatures div {
+  border-top: 1px solid #0a0a0a;
+  min-height: 54px;
+  padding-top: 8px;
+}
+
+.pdf-signatures span {
+  color: #0a0a0a8c;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .pdf-export .board {
@@ -536,6 +811,8 @@ label {
 
 @media (max-width: 620px) {
   .topbar,
+  .template-picker,
+  .recent-projects,
   .row-toolbar,
   .board-head {
     align-items: stretch;
@@ -585,7 +862,14 @@ label {
     background: white;
   }
 
+  .project-fields,
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
   .topbar,
+  .template-picker,
+  .recent-projects,
   .board-head,
   .row-toolbar,
   .modal-backdrop {
