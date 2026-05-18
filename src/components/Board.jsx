@@ -28,7 +28,7 @@ export function Board({
           <button type="button" className="ghost" onClick={onPrint}>
             Stampaj
           </button>
-          <button type="button" className="ghost" onClick={onExportPdf}>
+          <button type="button" className="pdf-action" onClick={onExportPdf}>
             Izvezi u PDF
           </button>
         </div>
