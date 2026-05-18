@@ -1,20 +1,16 @@
 export function Topbar({
   boardName,
   autosaveLabel,
-  canRedo,
-  canUndo,
   onBoardNameChange,
   onDuplicateProject,
   onExportJson,
   onImportClick,
   onNewProject,
   onOpenTemplates,
-  onRedo,
-  onUndo,
 }) {
   return (
     <header className="topbar">
-      <div>
+      <div className="topbar-title">
         <p>Tablo generator</p>
         <input
           aria-label="Naziv table"
@@ -25,27 +21,23 @@ export function Topbar({
       </div>
       <div className="topbar-actions">
         <span className="autosave-status">{autosaveLabel}</span>
-        <button type="button" className="ghost" onClick={onNewProject}>
-          Novi projekat
-        </button>
-        <button type="button" className="ghost" onClick={onDuplicateProject}>
-          Kopiraj
-        </button>
-        <button type="button" className="ghost" onClick={onOpenTemplates}>
-          Sabloni
-        </button>
-        <button type="button" className="ghost icon-button" disabled={!canUndo} onClick={onUndo} title="Undo">
-          Undo
-        </button>
-        <button type="button" className="ghost icon-button" disabled={!canRedo} onClick={onRedo} title="Redo">
-          Redo
-        </button>
-        <button type="button" className="ghost" onClick={onImportClick}>
-          Ucitaj projekat
-        </button>
-        <button type="button" onClick={onExportJson}>
-          Sacuvaj projekat
-        </button>
+        <div className="project-actions">
+          <button type="button" className="ghost" onClick={onNewProject}>
+            Novi projekat
+          </button>
+          <button type="button" className="ghost" onClick={onDuplicateProject}>
+            Kopiraj projekat
+          </button>
+          <button type="button" className="ghost" onClick={onOpenTemplates}>
+            Sabloni
+          </button>
+          <button type="button" className="ghost" onClick={onImportClick}>
+            Ucitaj projekat
+          </button>
+          <button type="button" onClick={onExportJson}>
+            Sacuvaj projekat
+          </button>
+        </div>
       </div>
     </header>
   );

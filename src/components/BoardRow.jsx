@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Breaker } from "./Breaker";
 import { getRowUsedModules } from "../utils/boardOperations";
 
@@ -11,6 +11,7 @@ export function BoardRow({
   onAddFid,
   onAddBell,
   onAddElement,
+  onAddRowAfter,
   onRemoveRow,
   onRenameRow,
   onUpdateRowCapacity,
@@ -21,6 +22,7 @@ export function BoardRow({
   onDropBreaker,
 }) {
   const [mobileView, setMobileView] = useState("overview");
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const usedModules = getRowUsedModules(row);
   const isOverCapacity = usedModules > row.capacity;
   const rowClassName = [isOverCapacity ? "row row-over-capacity" : "row", mobileView === "rail" ? "mobile-rail-mode" : "mobile-overview-mode"].join(" ");
@@ -65,20 +67,50 @@ export function BoardRow({
             {usedModules}/{row.capacity}M
           </span>
         </div>
-        <div>
+        <div className="row-actions">
           <button type="button" onClick={() => onAddBreaker(row.id)}>
-            + Osigurac
+            Dodaj osigurac
           </button>
-          <button type="button" className="ghost" onClick={() => onAddElement(row.id)}>
-            + Element
-          </button>
-          <button type="button" className="ghost" onClick={() => onAddFid(row.id)}>
-            + FID
-          </button>
-          <button type="button" className="ghost" onClick={() => onAddBell(row.id)}>
-            + Zvonce
-          </button>
-          <button type="button" className="ghost" onClick={() => onRemoveRow(row.id)}>
+          <div className="row-more">
+            <button type="button" className="ghost" onClick={() => setMoreMenuOpen((current) => !current)} aria-expanded={moreMenuOpen}>
+              + Jos
+            </button>
+            {moreMenuOpen && (
+              <div className="row-more-menu">
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() => {
+                    onAddElement(row.id);
+                    setMoreMenuOpen(false);
+                  }}
+                >
+                  Element
+                </button>
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() => {
+                    onAddFid(row.id);
+                    setMoreMenuOpen(false);
+                  }}
+                >
+                  FID
+                </button>
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() => {
+                    onAddBell(row.id);
+                    setMoreMenuOpen(false);
+                  }}
+                >
+                  Zvonce
+                </button>
+              </div>
+            )}
+          </div>
+          <button type="button" className="danger" onClick={() => onRemoveRow(row.id)}>
             Obrisi red
           </button>
         </div>
@@ -110,6 +142,12 @@ export function BoardRow({
       <div className={breakerRowClassName} onDragOver={(event) => onAllowDrop(event, row.id)} onDrop={(event) => onDropBreaker(event, row.id)}>
         {row.breakers.map(renderBreaker)}
         {row.breakers.length === 0 && <p className="empty-row">Dodaj prvi osigurac u ovaj red.</p>}
+      </div>
+
+      <div className="row-insert">
+        <button type="button" className="ghost" onClick={() => onAddRowAfter(row.id)}>
+          + Dodaj red ispod
+        </button>
       </div>
     </section>
   );
@@ -152,42 +190,20 @@ function createSegment(start, segmentSize) {
 }
 
 function RowCapacityInput({ rowId, capacity, onUpdateRowCapacity }) {
-  const [draft, setDraft] = useState(String(capacity));
-
-  useEffect(() => {
-    setDraft(String(capacity));
-  }, [capacity]);
-
-  function commitDraft() {
-    if (!draft) {
-      setDraft(String(capacity));
-      return;
-    }
-
-    onUpdateRowCapacity(rowId, draft);
-  }
+  const value = Math.max(1, Math.min(50, Number(capacity) || 1));
 
   return (
-    <label>
-      Modula
-      <input
-        type="text"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        value={draft}
-        onChange={(event) => {
-          const nextDraft = event.target.value.replace(/\D/g, "").slice(0, 2);
-          setDraft(nextDraft);
-          if (nextDraft) onUpdateRowCapacity(rowId, nextDraft);
-        }}
-        onBlur={commitDraft}
-        onFocus={(event) => event.target.select()}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.currentTarget.blur();
-          }
-        }}
-      />
-    </label>
+    <div className="row-capacity-control">
+      <span>Modula</span>
+      <span className="module-stepper">
+        <button type="button" className="ghost" aria-label="Smanji broj modula" disabled={value <= 1} onClick={() => onUpdateRowCapacity(rowId, value - 1)}>
+          -
+        </button>
+        <input type="text" value={value} readOnly tabIndex={-1} aria-label="Broj modula" />
+        <button type="button" className="ghost" aria-label="Povecaj broj modula" disabled={value >= 50} onClick={() => onUpdateRowCapacity(rowId, value + 1)}>
+          +
+        </button>
+      </span>
+    </div>
   );
 }

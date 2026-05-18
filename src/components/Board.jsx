@@ -8,10 +8,11 @@ export function Board({
   totalCapacity,
   usedModules,
   phaseBalance,
+  printPhaseBalance,
+  onPrintPhaseBalanceChange,
   selectedId,
   draggingId,
   dropTarget,
-  onAddRow,
   onPrint,
   onExportPdf,
   rowHandlers,
@@ -24,9 +25,6 @@ export function Board({
           <span>
             {rows.length} redova / {breakerCount} elemenata / {usedModules} od {totalCapacity}M
           </span>
-          <button type="button" onClick={onAddRow}>
-            + Dodaj red
-          </button>
           <button type="button" className="ghost" onClick={onPrint}>
             Stampaj
           </button>
@@ -34,14 +32,6 @@ export function Board({
             Izvezi u PDF
           </button>
         </div>
-      </div>
-
-      <div className={phaseBalance.isBalanced ? "phase-balance" : "phase-balance warning"}>
-        <strong>Balans faza</strong>
-        <span>L1 {phaseBalance.totals.L1.toFixed(0)} W</span>
-        <span>L2 {phaseBalance.totals.L2.toFixed(0)} W</span>
-        <span>L3 {phaseBalance.totals.L3.toFixed(0)} W</span>
-        <em>Razlika {phaseBalance.spread.toFixed(0)} W</em>
       </div>
 
       <div className="rows">
@@ -55,6 +45,18 @@ export function Board({
             {...rowHandlers}
           />
         ))}
+      </div>
+
+      <div className={[phaseBalance.isBalanced ? "phase-balance" : "phase-balance warning", printPhaseBalance ? "print-enabled" : ""].filter(Boolean).join(" ")}>
+        <strong>Balans faza</strong>
+        <span>L1 {phaseBalance.totals.L1.toFixed(0)} W</span>
+        <span>L2 {phaseBalance.totals.L2.toFixed(0)} W</span>
+        <span>L3 {phaseBalance.totals.L3.toFixed(0)} W</span>
+        <em>Razlika {phaseBalance.spread.toFixed(0)} W</em>
+        <label className="phase-print-toggle">
+          <input type="checkbox" checked={printPhaseBalance} onChange={(event) => onPrintPhaseBalanceChange(event.target.checked)} />
+          Stampaj
+        </label>
       </div>
     </section>
   );

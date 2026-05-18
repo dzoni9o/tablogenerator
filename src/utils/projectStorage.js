@@ -64,6 +64,12 @@ export function readRecentProjects() {
   }
 }
 
+export function deleteRecentProject(savedAt) {
+  const next = readRecentProjects().filter((item) => item.savedAt !== savedAt);
+  localStorage.setItem(recentProjectsKey, JSON.stringify(next));
+  return next;
+}
+
 function normalizeProject(project) {
   if (!project || typeof project !== "object") {
     throw new Error("JSON fajl nije projekat table.");
@@ -92,7 +98,7 @@ function normalizeRow(row, rowIndex) {
   return {
     id: asString(row.id, `row-${rowIndex + 1}`),
     name: asString(row.name, `Red ${rowIndex + 1}`),
-    capacity: Number(row.capacity) || 12,
+    capacity: Math.max(1, Math.min(50, Number(row.capacity) || 12)),
     breakers: Array.isArray(row.breakers) ? row.breakers.map(normalizeBreaker) : [],
   };
 }

@@ -15,6 +15,7 @@ export default function App() {
   const fileInputRef = useRef(null);
   const [exportError, setExportError] = useState("");
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [printPhaseBalance, setPrintPhaseBalance] = useState(false);
   const project = useBoardProject();
   const autosaveLabel = project.autosavedAt
     ? `Autosave ${new Date(project.autosavedAt).toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" })}`
@@ -25,17 +26,22 @@ export default function App() {
       <Topbar
         boardName={project.boardName}
         autosaveLabel={autosaveLabel}
-        canRedo={project.canRedo}
-        canUndo={project.canUndo}
         onBoardNameChange={project.setBoardName}
         onDuplicateProject={project.duplicateProject}
         onExportJson={project.exportJson}
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
         onOpenTemplates={() => setTemplatePickerOpen(true)}
-        onRedo={project.redo}
-        onUndo={project.undo}
       />
+
+      <aside className="history-dock" aria-label="Istorija izmena">
+        <button type="button" className="ghost icon-button" disabled={!project.canUndo} onClick={project.undo} title="Undo">
+          Undo
+        </button>
+        <button type="button" className="ghost icon-button" disabled={!project.canRedo} onClick={project.redo} title="Redo">
+          Redo
+        </button>
+      </aside>
 
       <input
         ref={fileInputRef}
@@ -49,10 +55,14 @@ export default function App() {
       />
 
       {project.importError && <p className="import-error">{project.importError}</p>}
-      {project.capacityMessage && <p className="capacity-error">{project.capacityMessage}</p>}
       {exportError && <p className="import-error">{exportError}</p>}
+      {project.capacityMessage && (
+        <p key={project.capacityMessage.id} className="capacity-toast" role="status" aria-live="polite">
+          {project.capacityMessage.text}
+        </p>
+      )}
 
-      <RecentProjects items={project.recentProjects} onLoad={project.loadProject} />
+      <RecentProjects items={project.recentProjects} onLoad={project.loadProject} onRemove={project.removeRecentProject} />
 
       <section className="workspace">
         <Board
@@ -63,15 +73,18 @@ export default function App() {
           totalCapacity={project.totalCapacity}
           usedModules={project.usedModules}
           phaseBalance={project.phaseBalance}
+          printPhaseBalance={printPhaseBalance}
+          onPrintPhaseBalanceChange={setPrintPhaseBalance}
           selectedId={project.selected}
           draggingId={project.dragging}
           dropTarget={project.dropTarget}
-          onAddRow={project.addRow}
           onPrint={() => window.print()}
           onExportPdf={async () => {
             try {
               setExportError("");
-              await exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance);
+              await exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance, {
+                includePhaseBalance: printPhaseBalance,
+              });
             } catch {
               setExportError("PDF export trenutno nije uspeo. Osvezi stranicu i pokusaj ponovo.");
             }
@@ -81,6 +94,7 @@ export default function App() {
             onAddElement: project.setCatalogTargetRow,
             onAddFid: project.setFidTargetRow,
             onAddBell: (rowId) => project.addSpecial(rowId, "bell"),
+            onAddRowAfter: project.addRowAfter,
             onRemoveRow: project.removeRow,
             onRenameRow: project.updateRowName,
             onUpdateRowCapacity: project.updateRowCapacity,

@@ -1,4 +1,4 @@
-export async function exportBoardPdf(boardNode, boardName, projectInfo = {}, rows = [], phaseBalance = null) {
+export async function exportBoardPdf(boardNode, boardName, projectInfo = {}, rows = [], phaseBalance = null, options = {}) {
   if (!boardNode) return;
 
   const [{ jsPDF }, html2canvasModule] = await Promise.all([import("jspdf"), import("html2canvas")]);
@@ -29,7 +29,9 @@ export async function exportBoardPdf(boardNode, boardName, projectInfo = {}, row
     .map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`)
     .join("");
   elementTable.className = "pdf-element-table";
-  elementTable.innerHTML = createElementTable(rows, phaseBalance);
+  const printablePhaseBalance = options.includePhaseBalance ? phaseBalance : null;
+
+  elementTable.innerHTML = createElementTable(rows, printablePhaseBalance);
   signatures.className = "pdf-signatures";
   signatures.innerHTML = `
     <div><span>Instalater</span></div>
@@ -37,7 +39,9 @@ export async function exportBoardPdf(boardNode, boardName, projectInfo = {}, row
     <div><span>Napomena / pecat</span></div>
   `;
   exportNode.querySelector(".board-head")?.remove();
+  if (!options.includePhaseBalance) exportNode.querySelector(".phase-balance")?.remove();
   exportNode.querySelectorAll(".row-toolbar").forEach((node) => node.remove());
+  exportNode.querySelectorAll(".phase-print-toggle").forEach((node) => node.remove());
   exportNode.querySelectorAll(".breaker.active").forEach((node) => node.classList.remove("active"));
   exportWrap.append(brand, title, meta, exportNode, elementTable, signatures);
   document.body.append(exportWrap);

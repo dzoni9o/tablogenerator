@@ -14,7 +14,14 @@ import {
   moveBreaker,
 } from "../utils/boardOperations";
 import { calculatePhaseBalance } from "../utils/phaseBalance";
-import { downloadProjectJson, parseProjectJson, readRecentProjects, readSavedProject, saveProjectToLocalStorage } from "../utils/projectStorage";
+import {
+  deleteRecentProject,
+  downloadProjectJson,
+  parseProjectJson,
+  readRecentProjects,
+  readSavedProject,
+  saveProjectToLocalStorage,
+} from "../utils/projectStorage";
 import { createId } from "../utils/ids";
 
 export function useBoardProject() {
@@ -33,7 +40,7 @@ export function useBoardProject() {
   const [catalogTargetRow, setCatalogTargetRow] = useState(null);
   const [autosavedAt, setAutosavedAt] = useState(null);
   const [importError, setImportError] = useState("");
-  const [capacityMessage, setCapacityMessage] = useState("");
+  const [capacityMessage, setCapacityMessage] = useState(null);
   const [recentProjects, setRecentProjects] = useState(() => readRecentProjects());
   const [pastRows, setPastRows] = useState([]);
   const [futureRows, setFutureRows] = useState([]);
@@ -54,6 +61,16 @@ export function useBoardProject() {
     return () => window.clearTimeout(timer);
   }, [boardName, rows, projectInfo]);
 
+  useEffect(() => {
+    if (!capacityMessage) return;
+
+    const timer = window.setTimeout(() => {
+      setCapacityMessage(null);
+    }, 2000);
+
+    return () => window.clearTimeout(timer);
+  }, [capacityMessage]);
+
   function commitRows(updater) {
     setRows((current) => {
       setPastRows((past) => [...past.slice(-19), current]);
@@ -63,7 +80,11 @@ export function useBoardProject() {
   }
 
   function showCapacityMessage(row, breaker) {
-    setCapacityMessage(`${row.name || "Red"} ima kapacitet ${row.capacity}M. Element ${breaker.label || breaker.type} zauzima ${breaker.poles || 1}M.`);
+    setCapacityMessage({
+      rowId: row.id,
+      id: createId(),
+      text: `${row.name || "Red"} ima kapacitet ${row.capacity}M. Element ${breaker.label || breaker.type} zauzima ${breaker.poles || 1}M.`,
+    });
   }
 
   function updateProjectInfo(field, value) {
@@ -80,6 +101,21 @@ export function useBoardProject() {
         breakers: [],
       },
     ]);
+  }
+
+  function addRowAfter(rowId) {
+    commitRows((current) => {
+      const rowIndex = current.findIndex((row) => row.id === rowId);
+      const nextRow = {
+        id: createId(),
+        name: `Red ${current.length + 1}`,
+        capacity: 12,
+        breakers: [],
+      };
+
+      if (rowIndex === -1) return [...current, nextRow];
+      return [...current.slice(0, rowIndex + 1), nextRow, ...current.slice(rowIndex + 1)];
+    });
   }
 
   function removeRow(rowId) {
@@ -111,7 +147,7 @@ export function useBoardProject() {
       current.map((row) => {
         if (row.id !== rowId) return row;
 
-        setCapacityMessage("");
+        setCapacityMessage(null);
         setSelected(breaker.id);
         return { ...row, breakers: [...row.breakers, breaker] };
       }),
@@ -137,7 +173,13 @@ export function useBoardProject() {
       : 0;
 
     if (!targetRow || neededModules > freeModules) {
-      if (targetRow) setCapacityMessage(`${targetRow.name || "Red"} ima slobodno ${freeModules}M, a FID kombinacija trazi ${neededModules}M.`);
+      if (targetRow) {
+        setCapacityMessage({
+          rowId: targetRow.id,
+          id: createId(),
+          text: `${targetRow.name || "Red"} ima slobodno ${freeModules}M, a FID kombinacija trazi ${neededModules}M.`,
+        });
+      }
       setFidTargetRow(null);
       setPendingFidPhase(null);
       return;
@@ -148,7 +190,7 @@ export function useBoardProject() {
         if (row.id !== rowId) return row;
 
         setSelected(fid.id);
-        setCapacityMessage("");
+        setCapacityMessage(null);
         setEditorOpen(false);
         setFidTargetRow(null);
         setPendingFidPhase(null);
@@ -162,6 +204,8 @@ export function useBoardProject() {
   }
 
   function removeBreaker(rowId, breakerId) {
+    if (capacityMessage?.rowId === rowId) setCapacityMessage(null);
+
     commitRows((current) => {
       const breakerToRemove = findBreaker(current, breakerId);
       const idsToRemove =
@@ -226,7 +270,8 @@ export function useBoardProject() {
   }
 
   function updateRowCapacity(rowId, capacity) {
-    const nextCapacity = Math.max(1, Math.min(72, Number(capacity) || 1));
+    const nextCapacity = Math.max(1, Math.min(50, Number(capacity) || 1));
+    if (capacityMessage?.rowId === rowId) setCapacityMessage(null);
     commitRows((current) => current.map((row) => (row.id === rowId ? { ...row, capacity: nextCapacity } : row)));
   }
 
@@ -268,7 +313,7 @@ export function useBoardProject() {
 
     commitRows((current) => moveBreaker(current, draggedId, rowId, breakerId));
     setSelected(draggedId);
-    setCapacityMessage("");
+    setCapacityMessage(null);
     clearDrag();
   }
 
@@ -311,9 +356,14 @@ export function useBoardProject() {
       setSelected(normalized.rows.flatMap((row) => row.breakers)[0]?.id ?? null);
       setEditorOpen(false);
       setImportError("");
+      setCapacityMessage(null);
     } catch {
       setImportError("Ne mogu da ucitam sacuvani projekat.");
     }
+  }
+
+  function removeRecentProject(savedAt) {
+    setRecentProjects(deleteRecentProject(savedAt));
   }
 
   function newProject() {
@@ -391,6 +441,7 @@ export function useBoardProject() {
     setPendingFidPhase,
     setCatalogTargetRow,
     addRow,
+    addRowAfter,
     removeRow,
     addBreaker,
     addFid,
@@ -410,6 +461,7 @@ export function useBoardProject() {
     exportJson,
     importJsonFile,
     loadProject,
+    removeRecentProject,
     newProject,
     duplicateProject,
     applyTemplate,
