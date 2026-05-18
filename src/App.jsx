@@ -5,7 +5,6 @@ import { CatalogModal } from "./components/CatalogModal";
 import { FidChoiceModal } from "./components/FidChoiceModal";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { RecentProjects } from "./components/RecentProjects";
-import { TemplatePicker } from "./components/TemplatePicker";
 import { Topbar } from "./components/Topbar";
 import { useBoardProject } from "./hooks/useBoardProject";
 import { exportBoardPdf } from "./utils/exportPdf";
@@ -31,6 +30,7 @@ export default function App() {
         onExportJson={project.exportJson}
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
+        onApplyTemplate={project.applyTemplate}
         onRedo={project.redo}
         onUndo={project.undo}
       />
@@ -50,8 +50,6 @@ export default function App() {
       {project.capacityMessage && <p className="capacity-error">{project.capacityMessage}</p>}
       {exportError && <p className="import-error">{exportError}</p>}
 
-      <ProjectDetails projectInfo={project.projectInfo} onUpdate={project.updateProjectInfo} />
-      <TemplatePicker onApply={project.applyTemplate} />
       <RecentProjects items={project.recentProjects} onLoad={project.loadProject} />
 
       <section className="workspace">
@@ -92,6 +90,8 @@ export default function App() {
           }}
         />
       </section>
+
+      <ProjectDetails projectInfo={project.projectInfo} onUpdate={project.updateProjectInfo} />
 
       {project.editorOpen && (
         <BreakerEditor

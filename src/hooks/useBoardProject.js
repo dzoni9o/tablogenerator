@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createInitialRows, defaultBoardName } from "../data/initialBoard";
+import { createBlankRows, createInitialRows, defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
 import { createRowsFromTemplate } from "../data/templates";
 import { createCatalogBreaker, createFid, createNeutralSwitch, getAmpLimit, labelLimit, descriptionLimit } from "../utils/breakerFactory";
@@ -317,13 +317,13 @@ export function useBoardProject() {
   }
 
   function newProject() {
-    const nextRows = createInitialRows();
+    const nextRows = createBlankRows();
     setBoardName(defaultBoardName);
     setProjectInfo(defaultProjectInfo);
     setRows(nextRows);
     setPastRows([]);
     setFutureRows([]);
-    setSelected(nextRows[0]?.breakers[0]?.id ?? null);
+    setSelected(null);
     setEditorOpen(false);
   }
 

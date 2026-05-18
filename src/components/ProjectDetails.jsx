@@ -1,9 +1,8 @@
 export function ProjectDetails({ projectInfo, onUpdate }) {
   return (
-    <section className="project-details" aria-label="Podaci projekta">
+    <section className="project-details" aria-label="Dokumentacija">
       <div>
-        <p>Dokumentacija</p>
-        <h2>Podaci za PDF i stampu</h2>
+        <h2>Dokumentacija</h2>
       </div>
       <div className="project-fields">
         <label>
@@ -29,10 +28,6 @@ export function ProjectDetails({ projectInfo, onUpdate }) {
         <label>
           Datum
           <input type="date" value={projectInfo.date} onChange={(event) => onUpdate("date", event.target.value)} />
-        </label>
-        <label className="field-wide">
-          Napomena
-          <textarea rows="2" value={projectInfo.note} onChange={(event) => onUpdate("note", event.target.value)} />
         </label>
       </div>
     </section>

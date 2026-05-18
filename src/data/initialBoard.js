@@ -30,3 +30,12 @@ export const createInitialRows = () => [
     ],
   },
 ];
+
+export const createBlankRows = () => [
+  {
+    id: createId(),
+    name: "Red 1",
+    capacity: defaultRowCapacity,
+    breakers: [],
+  },
+];

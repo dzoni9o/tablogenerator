@@ -190,7 +190,6 @@ textarea[readonly] {
 }
 
 .project-details,
-.template-picker,
 .recent-projects {
   border-bottom: 1px solid var(--border);
   padding: 18px 22px;
@@ -203,7 +202,6 @@ textarea[readonly] {
 }
 
 .project-details p,
-.template-picker span,
 .recent-projects span {
   color: var(--ink-soft);
   font-size: 0.75rem;
@@ -228,35 +226,12 @@ textarea[readonly] {
   grid-column: 1 / -1;
 }
 
-.template-picker,
 .recent-projects {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   background: var(--muted);
-}
-
-.template-picker {
-  display: grid;
-  gap: 10px;
-}
-
-.template-picker-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.template-options {
-  display: none;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.templates-open .template-options {
-  display: flex;
 }
 
 .recent-projects {
@@ -677,7 +652,12 @@ label {
   width: min(100%, 720px);
 }
 
-.catalog-grid {
+.template-modal {
+  width: min(100%, 520px);
+}
+
+.catalog-grid,
+.template-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
@@ -863,7 +843,6 @@ label {
 
 @media (max-width: 620px) {
   .topbar,
-  .template-picker,
   .recent-projects,
   .row-toolbar,
   .board-head {
@@ -886,21 +865,8 @@ label {
     width: 100%;
   }
 
-  .template-picker {
-    gap: 8px;
-  }
-
-  .template-picker-head {
-    display: grid;
-    grid-template-columns: 1fr auto;
-  }
-
   .template-options {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .templates-open .template-options {
-    display: grid;
   }
 
   .row-toolbar div {
@@ -986,13 +952,14 @@ label {
   }
 
   .mobile-segment-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
   .mobile-segment-grid .breaker {
-    width: 100%;
+    --module-width: 52px;
     height: 132px;
     min-height: 132px;
     padding: 8px 6px;
@@ -1018,7 +985,8 @@ label {
   }
 
   .editor-grid,
-  .catalog-grid {
+  .catalog-grid,
+  .template-options {
     grid-template-columns: 1fr;
   }
 
@@ -1051,7 +1019,6 @@ label {
   }
 
   .topbar,
-  .template-picker,
   .recent-projects,
   .board-head,
   .row-toolbar,
