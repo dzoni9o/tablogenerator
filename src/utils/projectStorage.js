@@ -3,6 +3,7 @@ import { defaultProjectInfo } from "../data/projectInfo";
 
 const storageKey = "tablogenerator.project.v2";
 const recentProjectsKey = "tablogenerator.recent.v1";
+const hiddenRecentProjectsKey = "tablogenerator.recent.hidden.v1";
 const projectVersion = 2;
 
 export function createProject(boardName, rows, projectInfo = defaultProjectInfo) {
@@ -58,14 +59,21 @@ export function createBlankProject() {
 
 export function readRecentProjects() {
   try {
-    return JSON.parse(localStorage.getItem(recentProjectsKey) ?? "[]");
+    const hidden = readHiddenRecentProjects();
+    return readRecentProjectsRaw().filter((item) => !hidden.includes(getRecentIdentity(item)));
   } catch {
     return [];
   }
 }
 
 export function deleteRecentProject(savedAt) {
-  const next = readRecentProjects().filter((item) => item.savedAt !== savedAt);
+  const recent = readRecentProjectsRaw();
+  const removedItem = recent.find((item) => item.savedAt === savedAt);
+  const removedIdentity = removedItem ? getRecentIdentity(removedItem) : null;
+  const hidden = removedIdentity ? [...new Set([...readHiddenRecentProjects(), removedIdentity])] : readHiddenRecentProjects();
+  const next = recent.filter((item) => item.savedAt !== savedAt && (!removedIdentity || getRecentIdentity(item) !== removedIdentity));
+
+  localStorage.setItem(hiddenRecentProjectsKey, JSON.stringify(hidden));
   localStorage.setItem(recentProjectsKey, JSON.stringify(next));
   return next;
 }
@@ -136,13 +144,42 @@ function safeFileName(value) {
 }
 
 function saveRecentProject(project) {
-  const recent = readRecentProjects();
+  const recent = readRecentProjectsRaw();
+  const hidden = readHiddenRecentProjects();
   const summary = {
     boardName: project.boardName,
     objectName: project.projectInfo.objectName,
     savedAt: project.savedAt,
     project,
   };
+  const summaryIdentity = getRecentIdentity(summary);
+
+  if (hidden.includes(summaryIdentity)) {
+    const nextWithoutHidden = recent.filter((item) => getRecentIdentity(item) !== summaryIdentity);
+    localStorage.setItem(recentProjectsKey, JSON.stringify(nextWithoutHidden));
+    return;
+  }
+
   const next = [summary, ...recent.filter((item) => item.boardName !== project.boardName)].slice(0, 5);
   localStorage.setItem(recentProjectsKey, JSON.stringify(next));
+}
+
+function readHiddenRecentProjects() {
+  try {
+    return JSON.parse(localStorage.getItem(hiddenRecentProjectsKey) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+function readRecentProjectsRaw() {
+  try {
+    return JSON.parse(localStorage.getItem(recentProjectsKey) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+function getRecentIdentity(item) {
+  return [item.boardName || "", item.objectName || item.project?.projectInfo?.objectName || ""].join("::");
 }

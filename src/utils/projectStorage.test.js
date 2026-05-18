@@ -1,5 +1,15 @@
-import { describe, expect, it } from "vitest";
-import { parseProjectJson } from "./projectStorage";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { deleteRecentProject, parseProjectJson, readRecentProjects, saveProjectToLocalStorage } from "./projectStorage";
+
+beforeEach(() => {
+  const store = new Map();
+
+  vi.stubGlobal("localStorage", {
+    getItem: (key) => store.get(key) ?? null,
+    setItem: (key, value) => store.set(key, String(value)),
+    removeItem: (key) => store.delete(key),
+  });
+});
 
 describe("project storage", () => {
   it("normalizes old project files with phase defaults", () => {
@@ -36,5 +46,18 @@ describe("project storage", () => {
     );
 
     expect(project.rows[0].breakers[0].loadW).toBe("2500");
+  });
+
+  it("keeps deleted recent projects hidden from autosave", () => {
+    const rows = [{ id: "r1", name: "Red 1", capacity: 12, breakers: [] }];
+    const projectInfo = { objectName: "Objekat" };
+    const savedAt = saveProjectToLocalStorage("Tabla", rows, projectInfo);
+
+    expect(readRecentProjects()).toHaveLength(1);
+
+    deleteRecentProject(savedAt);
+    saveProjectToLocalStorage("Tabla", rows, projectInfo);
+
+    expect(readRecentProjects()).toHaveLength(0);
   });
 });
