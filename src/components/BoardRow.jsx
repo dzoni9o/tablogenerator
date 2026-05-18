@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Breaker } from "./Breaker";
 import { getRowUsedModules } from "../utils/boardOperations";
 
@@ -27,16 +28,7 @@ export function BoardRow({
       <div className="row-toolbar">
         <div className="row-meta">
           <input aria-label="Naziv reda" value={row.name} onChange={(event) => onRenameRow(row.id, event.target.value)} />
-          <label>
-            Modula
-            <input
-              type="number"
-              min="1"
-              max="72"
-              value={row.capacity}
-              onChange={(event) => onUpdateRowCapacity(row.id, event.target.value)}
-            />
-          </label>
+          <RowCapacityInput rowId={row.id} capacity={row.capacity} onUpdateRowCapacity={onUpdateRowCapacity} />
           <span className={isOverCapacity ? "capacity-pill warning" : "capacity-pill"}>
             {usedModules}/{row.capacity}M
           </span>
@@ -89,5 +81,46 @@ export function BoardRow({
         {row.breakers.length === 0 && <p className="empty-row">Dodaj prvi osigurac u ovaj red.</p>}
       </div>
     </section>
+  );
+}
+
+function RowCapacityInput({ rowId, capacity, onUpdateRowCapacity }) {
+  const [draft, setDraft] = useState(String(capacity));
+
+  useEffect(() => {
+    setDraft(String(capacity));
+  }, [capacity]);
+
+  function commitDraft() {
+    if (!draft) {
+      setDraft(String(capacity));
+      return;
+    }
+
+    onUpdateRowCapacity(rowId, draft);
+  }
+
+  return (
+    <label>
+      Modula
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={draft}
+        onChange={(event) => {
+          const nextDraft = event.target.value.replace(/\D/g, "").slice(0, 2);
+          setDraft(nextDraft);
+          if (nextDraft) onUpdateRowCapacity(rowId, nextDraft);
+        }}
+        onBlur={commitDraft}
+        onFocus={(event) => event.target.select()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.currentTarget.blur();
+          }
+        }}
+      />
+    </label>
   );
 }

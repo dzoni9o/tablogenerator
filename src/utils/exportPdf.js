@@ -109,7 +109,7 @@ function createElementTable(rows, phaseBalance) {
             <td>${escapeHtml(breaker.label)}</td>
             <td>${escapeHtml(breaker.amp)}</td>
             <td>${escapeHtml(breaker.phase || "-")}</td>
-            <td>${escapeHtml(breaker.loadKw || "-")}</td>
+            <td>${escapeHtml(breaker.loadW || legacyLoadWatts(breaker) || "-")}</td>
             <td>${escapeHtml(breaker.poles || 1)}M</td>
             <td>${escapeHtml(breaker.description || "")}</td>
           </tr>
@@ -118,7 +118,7 @@ function createElementTable(rows, phaseBalance) {
     )
     .join("");
   const balance = phaseBalance
-    ? `<p>Balans: L1 ${phaseBalance.totals.L1.toFixed(1)} kW · L2 ${phaseBalance.totals.L2.toFixed(1)} kW · L3 ${phaseBalance.totals.L3.toFixed(1)} kW · razlika ${phaseBalance.spread.toFixed(1)} kW</p>`
+    ? `<p>Balans: L1 ${phaseBalance.totals.L1.toFixed(0)} W · L2 ${phaseBalance.totals.L2.toFixed(0)} W · L3 ${phaseBalance.totals.L3.toFixed(0)} W · razlika ${phaseBalance.spread.toFixed(0)} W</p>`
     : "";
 
   return `
@@ -131,7 +131,7 @@ function createElementTable(rows, phaseBalance) {
           <th>Oznaka</th>
           <th>Amp.</th>
           <th>Faza</th>
-          <th>kW</th>
+          <th>W</th>
           <th>Mod.</th>
           <th>Opis</th>
         </tr>
@@ -139,4 +139,9 @@ function createElementTable(rows, phaseBalance) {
       <tbody>${rowsHtml}</tbody>
     </table>
   `;
+}
+
+function legacyLoadWatts(breaker) {
+  const legacyKw = Number(String(breaker.loadKw || "").replace(",", "."));
+  return Number.isFinite(legacyKw) && legacyKw > 0 ? String(Math.round(legacyKw * 1000)) : "";
 }

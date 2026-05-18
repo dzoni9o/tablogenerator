@@ -42,11 +42,11 @@ export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove,
             </select>
           </label>
           <label>
-            Snaga kW
+            Snaga W
             <input
-              inputMode="decimal"
-              value={selectedBreaker.loadKw || ""}
-              onChange={(event) => onUpdate("loadKw", event.target.value.replace(",", ".").slice(0, 6))}
+              inputMode="numeric"
+              value={selectedBreaker.loadW || ""}
+              onChange={(event) => onUpdate("loadW", event.target.value.replace(/\D/g, "").slice(0, 6))}
             />
           </label>
         </div>

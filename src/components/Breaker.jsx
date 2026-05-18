@@ -45,7 +45,7 @@ export function Breaker({
       ) : (
         <span className="icon-slot empty" aria-hidden="true" />
       )}
-      <small>{breaker.loadKw ? `${breaker.loadKw} kW · ${breaker.description || "Bez opisa"}` : breaker.description || "Bez opisa"}</small>
+      <small>{breaker.loadW ? `${breaker.loadW} W · ${breaker.description || "Bez opisa"}` : breaker.description || "Bez opisa"}</small>
     </button>
   );
 }

@@ -38,10 +38,10 @@ export function Board({
 
       <div className={phaseBalance.isBalanced ? "phase-balance" : "phase-balance warning"}>
         <strong>Balans faza</strong>
-        <span>L1 {phaseBalance.totals.L1.toFixed(1)} kW</span>
-        <span>L2 {phaseBalance.totals.L2.toFixed(1)} kW</span>
-        <span>L3 {phaseBalance.totals.L3.toFixed(1)} kW</span>
-        <em>Razlika {phaseBalance.spread.toFixed(1)} kW</em>
+        <span>L1 {phaseBalance.totals.L1.toFixed(0)} W</span>
+        <span>L2 {phaseBalance.totals.L2.toFixed(0)} W</span>
+        <span>L3 {phaseBalance.totals.L3.toFixed(0)} W</span>
+        <em>Razlika {phaseBalance.spread.toFixed(0)} W</em>
       </div>
 
       <div className="rows">

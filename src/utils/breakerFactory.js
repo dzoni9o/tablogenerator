@@ -27,7 +27,7 @@ export const createCatalogBreaker = (type, index) => {
     label: item.defaultLabel === "F" ? `F${index}` : `${item.defaultLabel}${index > 1 ? ` ${index}` : ""}`,
     amp: item.amp,
     phase: item.type === "busbar" ? "NPE" : item.poles >= 3 ? "3F" : "L1",
-    loadKw: "",
+    loadW: "",
     description: item.description,
   };
 };
@@ -40,7 +40,7 @@ export const createFid = (phase, index) => ({
   label: phase === "three" ? `FID 3F ${index}` : `FID 1F ${index}`,
   amp: phase === "three" ? "40A/4P" : "40A/2P",
   phase: phase === "three" ? "3F" : "L1",
-  loadKw: "",
+  loadW: "",
   description: phase === "three" ? "Trofazna FID zastita" : "Monofazna FID zastita",
 });
 
@@ -53,7 +53,7 @@ export const createNeutralSwitch = (index, linkedFidId = null) => ({
   label: `N ${index}`,
   amp: "2P",
   phase: "NPE",
-  loadKw: "",
+  loadW: "",
   description: "Zastitnik od prekida nultog voda",
 });
 

@@ -107,9 +107,18 @@ function normalizeBreaker(breaker, index) {
     label: asString(breaker.label, `F${index + 1}`),
     amp: asString(breaker.amp, "B16"),
     phase: asString(breaker.phase, breaker.type === "neutral" || breaker.type === "busbar" ? "NPE" : "L1"),
-    loadKw: asString(breaker.loadKw, ""),
+    loadW: normalizeLoadWatts(breaker),
     description: asString(breaker.description, "Bez opisa"),
   };
+}
+
+function normalizeLoadWatts(breaker) {
+  if (typeof breaker.loadW === "string") return breaker.loadW;
+  if (typeof breaker.loadKw !== "string" || !breaker.loadKw) return "";
+
+  const legacyValue = Number(breaker.loadKw.replace(",", "."));
+  if (!Number.isFinite(legacyValue) || legacyValue <= 0) return "";
+  return String(Math.round(legacyValue * 1000));
 }
 
 function asString(value, fallback) {

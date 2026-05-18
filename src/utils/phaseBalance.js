@@ -11,7 +11,7 @@ export function calculatePhaseBalance(rows) {
   const totals = { L1: 0, L2: 0, L3: 0 };
 
   rows.flatMap((row) => row.breakers).forEach((breaker) => {
-    const load = Number(breaker.loadKw) || 0;
+    const load = getLoadWatts(breaker);
     if (!load) return;
 
     if (breaker.phase === "3F") {
@@ -34,6 +34,13 @@ export function calculatePhaseBalance(rows) {
   return {
     totals,
     spread,
-    isBalanced: spread <= 1.5,
+    isBalanced: spread <= 1500,
   };
+}
+
+function getLoadWatts(breaker) {
+  if (breaker.loadW !== undefined) return Number(breaker.loadW) || 0;
+
+  const legacyKw = Number(String(breaker.loadKw || "").replace(",", "."));
+  return Number.isFinite(legacyKw) ? legacyKw * 1000 : 0;
 }
