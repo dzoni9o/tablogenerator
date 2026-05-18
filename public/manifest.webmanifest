@@ -2,13 +2,13 @@
   "name": "Tablo Generator",
   "short_name": "Table",
   "description": "Generator dokumentacije i rasporeda elektro tabli za instalatere.",
-  "start_url": "/tablogenerator/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0A0A0A",
   "icons": [
     {
-      "src": "/tablogenerator/icon.svg",
+      "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

@@ -1,5 +1,10 @@
 const cacheName = "tablogenerator-v1";
-const appShell = ["/tablogenerator/", "/tablogenerator/manifest.webmanifest", "/tablogenerator/icon.svg"];
+const scopeUrl = new URL(self.registration.scope);
+const appShell = [
+  scopeUrl.pathname,
+  new URL("manifest.webmanifest", scopeUrl).pathname,
+  new URL("icon.svg", scopeUrl).pathname,
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll(appShell)));
@@ -27,7 +32,7 @@ self.addEventListener("fetch", (event) => {
           caches.open(cacheName).then((cache) => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match("/tablogenerator/"));
+        .catch(() => caches.match(scopeUrl.pathname));
     }),
   );
 });
