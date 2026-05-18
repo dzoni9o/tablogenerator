@@ -1,5 +1,3 @@
-import { TemplatePicker } from "./TemplatePicker";
-
 export function Topbar({
   boardName,
   autosaveLabel,
@@ -10,7 +8,7 @@ export function Topbar({
   onExportJson,
   onImportClick,
   onNewProject,
-  onApplyTemplate,
+  onOpenTemplates,
   onRedo,
   onUndo,
 }) {
@@ -33,7 +31,9 @@ export function Topbar({
         <button type="button" className="ghost" onClick={onDuplicateProject}>
           Kopiraj
         </button>
-        <TemplatePicker onApply={onApplyTemplate} />
+        <button type="button" className="ghost" onClick={onOpenTemplates}>
+          Sabloni
+        </button>
         <button type="button" className="ghost icon-button" disabled={!canUndo} onClick={onUndo} title="Undo">
           Undo
         </button>

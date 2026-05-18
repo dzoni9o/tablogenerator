@@ -5,6 +5,7 @@ import { CatalogModal } from "./components/CatalogModal";
 import { FidChoiceModal } from "./components/FidChoiceModal";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { RecentProjects } from "./components/RecentProjects";
+import { TemplatePicker } from "./components/TemplatePicker";
 import { Topbar } from "./components/Topbar";
 import { useBoardProject } from "./hooks/useBoardProject";
 import { exportBoardPdf } from "./utils/exportPdf";
@@ -13,6 +14,7 @@ export default function App() {
   const boardRef = useRef(null);
   const fileInputRef = useRef(null);
   const [exportError, setExportError] = useState("");
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const project = useBoardProject();
   const autosaveLabel = project.autosavedAt
     ? `Autosave ${new Date(project.autosavedAt).toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" })}`
@@ -30,7 +32,7 @@ export default function App() {
         onExportJson={project.exportJson}
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
-        onApplyTemplate={project.applyTemplate}
+        onOpenTemplates={() => setTemplatePickerOpen(true)}
         onRedo={project.redo}
         onUndo={project.undo}
       />
@@ -101,6 +103,15 @@ export default function App() {
           onRemove={project.removeBreaker}
           onSave={project.saveSelected}
           onUpdate={project.updateSelected}
+        />
+      )}
+
+      {templatePickerOpen && (
+        <TemplatePicker
+          onApply={project.applyTemplate}
+          onClose={() => {
+            setTemplatePickerOpen(false);
+          }}
         />
       )}
 
