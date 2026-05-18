@@ -27,6 +27,7 @@
 
 body {
   margin: 0;
+  overflow-x: hidden;
 }
 
 button,
@@ -234,6 +235,28 @@ textarea[readonly] {
   gap: 8px;
   flex-wrap: wrap;
   background: var(--muted);
+}
+
+.template-picker {
+  display: grid;
+  gap: 10px;
+}
+
+.template-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.template-options {
+  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.templates-open .template-options {
+  display: flex;
 }
 
 .recent-projects {
@@ -554,11 +577,15 @@ textarea[readonly] {
 .modal-backdrop {
   position: fixed;
   inset: 0;
+  width: 100dvw;
+  height: 100dvh;
   z-index: 20;
   display: grid;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
   background: rgba(10, 10, 10, 0.42);
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 18px;
 }
 
@@ -571,6 +598,7 @@ textarea[readonly] {
   border-radius: 8px;
   background: var(--card);
   box-shadow: 0 22px 70px rgba(10, 10, 10, 0.22);
+  margin: auto;
   padding: 20px;
 }
 
@@ -858,6 +886,23 @@ label {
     width: 100%;
   }
 
+  .template-picker {
+    gap: 8px;
+  }
+
+  .template-picker-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .template-options {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .templates-open .template-options {
+    display: grid;
+  }
+
   .row-toolbar div {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -892,19 +937,19 @@ label {
   }
 
   .mobile-overview-mode .mobile-overview-list {
-    display: grid;
+    display: grid !important;
   }
 
   .mobile-overview-mode .rail-breaker-row {
-    display: none;
+    display: none !important;
   }
 
   .mobile-rail-mode .mobile-overview-list {
-    display: none;
+    display: none !important;
   }
 
   .mobile-rail-mode .rail-breaker-row {
-    display: flex;
+    display: flex !important;
   }
 
   .mobile-overview-list {
@@ -914,9 +959,8 @@ label {
   .mobile-segment {
     border: 1px solid var(--border);
     border-radius: 7px;
-    background:
-      linear-gradient(rgba(255, 214, 10, 0.42), rgba(255, 214, 10, 0.42)) 0 70px / 100% 10px no-repeat,
-      var(--muted);
+    background: var(--muted);
+    box-shadow: inset 4px 0 0 var(--brand);
     padding: 10px;
   }
 
