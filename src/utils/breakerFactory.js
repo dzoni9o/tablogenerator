@@ -6,16 +6,6 @@ export const descriptionLimit = 70;
 
 export const getAmpLimit = (breaker) => (breaker?.type === "fid" ? 10 : 4);
 
-export const createBreaker = (index) => ({
-  id: createId(),
-  type: "breaker",
-  poles: 1,
-  icon: "light",
-  label: `F${index}`,
-  amp: "B16",
-  description: "Novi osigurac",
-});
-
 export const createCatalogBreaker = (type, index) => {
   const item = getCatalogItem(type);
 
@@ -55,14 +45,4 @@ export const createNeutralSwitch = (index, linkedFidId = null) => ({
   phase: "NPE",
   loadW: "",
   description: "Zastitnik od prekida nultog voda",
-});
-
-export const createBell = (index) => ({
-  id: createId(),
-  type: "bell",
-  poles: 1,
-  icon: "bell",
-  label: `ZV${index}`,
-  amp: "230V",
-  description: "Zvonce",
 });

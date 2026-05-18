@@ -1,4 +1,4 @@
-const cacheName = "tablogenerator-v2";
+const cacheName = "tablogenerator-v3";
 const scopeUrl = new URL(self.registration.scope);
 const appShell = [
   scopeUrl.pathname,

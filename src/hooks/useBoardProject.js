@@ -66,18 +66,6 @@ export function useBoardProject() {
     setProjectInfo((current) => ({ ...current, [field]: value }));
   }
 
-  function addRow() {
-    commitRows((current) => [
-      ...current,
-      {
-        id: createId(),
-        name: `Red ${current.length + 1}`,
-        capacity: 12,
-        breakers: [],
-      },
-    ]);
-  }
-
   function addRowAfter(rowId) {
     commitRows((current) => {
       const rowIndex = current.findIndex((row) => row.id === rowId);
@@ -411,7 +399,6 @@ export function useBoardProject() {
     setFidTargetRow,
     setPendingFidPhase,
     setCatalogTargetRow,
-    addRow,
     addRowAfter,
     removeRow,
     addBreaker,

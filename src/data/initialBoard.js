@@ -1,12 +1,7 @@
 import { createId } from "../utils/ids";
-import { defaultProjectInfo } from "./projectInfo";
 
 export const defaultBoardName = "Spratna tabla ST-1";
 export const defaultRowCapacity = 12;
-export const defaultProject = {
-  boardName: defaultBoardName,
-  projectInfo: defaultProjectInfo,
-};
 
 export const createInitialRows = () => [
   {

@@ -1,4 +1,4 @@
-import { createInitialRows, defaultBoardName } from "../data/initialBoard";
+import { defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
 
 const storageKey = "tablogenerator.project.v2";
@@ -49,14 +49,6 @@ export function parseProjectJson(text) {
   return normalizeProject(JSON.parse(text));
 }
 
-export function createBlankProject() {
-  return {
-    boardName: defaultBoardName,
-    projectInfo: defaultProjectInfo,
-    rows: createInitialRows(),
-  };
-}
-
 export function readRecentProjects() {
   try {
     const hidden = readHiddenRecentProjects();
@@ -70,7 +62,7 @@ export function deleteRecentProject(savedAt) {
   const recent = readRecentProjectsRaw();
   const removedItem = recent.find((item) => item.savedAt === savedAt);
   const removedIdentity = removedItem ? getRecentIdentity(removedItem) : null;
-  const hidden = removedIdentity ? [...new Set([...readHiddenRecentProjects(), removedIdentity])] : readHiddenRecentProjects();
+  const hidden = removedIdentity ? [...new Set([...readHiddenRecentProjects(), removedIdentity])].slice(-20) : readHiddenRecentProjects();
   const next = recent.filter((item) => item.savedAt !== savedAt && (!removedIdentity || getRecentIdentity(item) !== removedIdentity));
 
   localStorage.setItem(hiddenRecentProjectsKey, JSON.stringify(hidden));
