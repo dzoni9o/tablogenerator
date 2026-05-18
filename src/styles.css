@@ -27,7 +27,14 @@
 
 body {
   margin: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
 }
 
 button,
@@ -101,9 +108,12 @@ textarea[readonly] {
 }
 
 .app {
+  width: 100%;
+  max-width: 100vw;
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
+  overflow-x: clip;
 }
 
 .topbar {
@@ -151,6 +161,7 @@ textarea[readonly] {
 }
 
 .topbar-actions {
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -159,6 +170,7 @@ textarea[readonly] {
 }
 
 .project-actions {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -167,7 +179,9 @@ textarea[readonly] {
 }
 
 .project-actions button {
+  min-width: 0;
   min-height: 42px;
+  white-space: normal;
 }
 
 .icon-button {
@@ -243,11 +257,16 @@ textarea[readonly] {
 }
 
 .workspace {
+  width: 100%;
+  max-width: 100%;
   min-height: 0;
+  min-width: 0;
 }
 
 .project-details,
 .recent-projects {
+  width: 100%;
+  min-width: 0;
   border-bottom: 1px solid var(--border);
   padding: 18px 22px;
 }
@@ -323,6 +342,8 @@ textarea[readonly] {
 }
 
 .board {
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   overflow: auto;
   padding: 22px;
@@ -411,6 +432,7 @@ textarea[readonly] {
 }
 
 .row {
+  min-width: 0;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -426,6 +448,7 @@ textarea[readonly] {
 }
 
 .row-meta {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -443,7 +466,8 @@ textarea[readonly] {
   box-shadow: none;
 }
 
-.row-toolbar div {
+.row-meta,
+.row-actions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -451,6 +475,7 @@ textarea[readonly] {
 
 .row-actions {
   position: relative;
+  min-width: 0;
   align-items: flex-start;
 }
 
@@ -1014,6 +1039,17 @@ label {
 }
 
 @media (max-width: 900px) {
+  .app,
+  .topbar,
+  .workspace,
+  .board,
+  .project-details,
+  .recent-projects,
+  .row,
+  .phase-balance {
+    max-width: 100vw;
+  }
+
   .topbar,
   .recent-projects,
   .row-toolbar,
@@ -1025,12 +1061,12 @@ label {
   .topbar-actions {
     align-items: stretch;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .project-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .autosave-status {
@@ -1038,6 +1074,7 @@ label {
   }
 
   .board-name {
+    max-width: 100%;
     width: 100%;
   }
 
@@ -1052,7 +1089,7 @@ label {
 
   .phase-balance {
     align-items: flex-start;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .phase-balance strong,
@@ -1066,16 +1103,16 @@ label {
   }
 
   .template-options {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .row-toolbar div {
+  .row-meta {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .row-actions {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .row-more-menu {
@@ -1092,9 +1129,13 @@ label {
     flex-direction: column;
   }
 
+  .project-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .mobile-row-view {
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
     align-items: center;
     gap: 8px;
     border: 1px solid var(--border);
@@ -1209,7 +1250,7 @@ label {
   }
 
   .recent-item {
-    grid-template-columns: 1fr 40px;
+    grid-template-columns: minmax(0, 1fr) 40px;
   }
 
   .history-dock {
@@ -1227,6 +1268,36 @@ label {
 
   .capacity-toast {
     bottom: 68px;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar,
+  .board,
+  .project-details,
+  .recent-projects {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .project-actions {
+    gap: 6px;
+  }
+
+  .autosave-status,
+  .project-actions button {
+    font-size: 0.82rem;
+  }
+
+  .project-actions button,
+  .board-actions button,
+  .row-actions button {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .row-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
