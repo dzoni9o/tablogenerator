@@ -31,6 +31,7 @@ export default function App() {
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
         onOpenTemplates={() => setTemplatePickerOpen(true)}
+        recentProjectsNode={<RecentProjects items={project.recentProjects} onLoad={project.loadProject} onRemove={project.removeRecentProject} />}
       />
 
       <aside className="history-dock" aria-label="Istorija izmena">
@@ -60,8 +61,6 @@ export default function App() {
           {project.capacityMessage.text}
         </p>
       )}
-
-      <RecentProjects items={project.recentProjects} onLoad={project.loadProject} onRemove={project.removeRecentProject} />
 
       <section className="workspace">
         <Board

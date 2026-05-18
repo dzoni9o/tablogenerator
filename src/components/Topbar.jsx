@@ -7,6 +7,7 @@ export function Topbar({
   onImportClick,
   onNewProject,
   onOpenTemplates,
+  recentProjectsNode,
 }) {
   return (
     <header className="topbar">
@@ -31,6 +32,7 @@ export function Topbar({
           <button type="button" className="ghost" onClick={onOpenTemplates}>
             Sabloni
           </button>
+          {recentProjectsNode}
           <button type="button" className="ghost" onClick={onImportClick}>
             Ucitaj projekat
           </button>

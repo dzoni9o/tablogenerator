@@ -263,8 +263,7 @@ textarea[readonly] {
   min-width: 0;
 }
 
-.project-details,
-.recent-projects {
+.project-details {
   width: 100%;
   min-width: 0;
   border-bottom: 1px solid var(--border);
@@ -277,8 +276,7 @@ textarea[readonly] {
   background: var(--paper);
 }
 
-.project-details p,
-.recent-projects span {
+.project-details p {
   color: var(--ink-soft);
   font-size: 0.75rem;
   font-weight: 850;
@@ -303,16 +301,7 @@ textarea[readonly] {
 }
 
 .recent-projects {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  background: var(--muted);
-}
-
-.recent-projects {
-  background: var(--paper);
-  padding-block: 12px;
+  display: contents;
 }
 
 .recent-modal {
@@ -866,14 +855,12 @@ label {
   .workspace,
   .board,
   .project-details,
-  .recent-projects,
   .row,
   .phase-balance {
     max-width: 100vw;
   }
 
   .topbar,
-  .recent-projects,
   .row-toolbar,
   .board-head {
     align-items: stretch;
@@ -1096,8 +1083,7 @@ label {
 @media (max-width: 420px) {
   .topbar,
   .board,
-  .project-details,
-  .recent-projects {
+  .project-details {
     padding-left: 12px;
     padding-right: 12px;
   }
@@ -1146,7 +1132,6 @@ label {
   }
 
   .topbar,
-  .recent-projects,
   .board-head,
   .row-toolbar,
   .row-insert,

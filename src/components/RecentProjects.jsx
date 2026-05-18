@@ -7,11 +7,11 @@ export function RecentProjects({ items, onLoad, onRemove }) {
 
   return (
     <>
-      <section className="recent-projects" aria-label="Poslednji projekti">
+      <div className="recent-projects" aria-label="Poslednji projekti">
         <button type="button" className="ghost" onClick={() => setIsOpen(true)}>
           Poslednje
         </button>
-      </section>
+      </div>
       {isOpen && (
         <div className="modal-backdrop" onClick={() => setIsOpen(false)}>
           <section className="choice-modal recent-modal" aria-label="Poslednji projekti" onClick={(event) => event.stopPropagation()}>
