@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Board } from "./components/Board";
 import { BreakerEditor } from "./components/BreakerEditor";
 import { CatalogModal } from "./components/CatalogModal";
@@ -13,6 +13,7 @@ import { exportBoardPdf } from "./utils/exportPdf";
 export default function App() {
   const boardRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [exportError, setExportError] = useState("");
   const project = useBoardProject();
   const autosaveLabel = project.autosavedAt
     ? `Autosave ${new Date(project.autosavedAt).toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" })}`
@@ -47,6 +48,7 @@ export default function App() {
 
       {project.importError && <p className="import-error">{project.importError}</p>}
       {project.capacityMessage && <p className="capacity-error">{project.capacityMessage}</p>}
+      {exportError && <p className="import-error">{exportError}</p>}
 
       <ProjectDetails projectInfo={project.projectInfo} onUpdate={project.updateProjectInfo} />
       <TemplatePicker onApply={project.applyTemplate} />
@@ -66,7 +68,14 @@ export default function App() {
           dropTarget={project.dropTarget}
           onAddRow={project.addRow}
           onPrint={() => window.print()}
-          onExportPdf={() => exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance)}
+          onExportPdf={async () => {
+            try {
+              setExportError("");
+              await exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance);
+            } catch {
+              setExportError("PDF export trenutno nije uspeo. Osvezi stranicu i pokusaj ponovo.");
+            }
+          }}
           rowHandlers={{
             onAddBreaker: project.addBreaker,
             onAddElement: project.setCatalogTargetRow,
