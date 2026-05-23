@@ -13,9 +13,9 @@ export function Topbar({
   const [smallScreen, setSmallScreen] = useState(() => window.matchMedia?.("(max-width: 900px)").matches ?? false);
   const mobileActions = [
     { title: "Novi projekat", text: "Prazna tabla sa jednim redom", onClick: onNewProject },
-    { title: "Sacuvaj projekat", text: "Preuzmi projekat u fajl", onClick: onExportJson, primary: true },
-    { title: "Ucitaj projekat", text: "Otvori postojeci projekat", onClick: onImportClick },
-    onShareProject ? { title: "Podeli projekat", text: "Posalji projekat drugoj osobi", onClick: onShareProject } : null,
+    { title: "Sacuvaj projekat", text: "Preuzmi .tgen fajl", onClick: onExportJson, primary: true },
+    { title: "Ucitaj projekat", text: "Otvori .tgen fajl", onClick: onImportClick },
+    onShareProject ? { title: "Podeli .tgen", text: "Posalji projekat drugoj osobi", onClick: onShareProject } : null,
   ].filter(Boolean);
 
   useEffect(() => {

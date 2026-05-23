@@ -474,36 +474,6 @@ textarea[readonly] {
   grid-column: 1 / -1;
 }
 
-.recent-projects {
-  display: contents;
-}
-
-.recent-modal {
-  width: min(100%, 560px);
-}
-
-.recent-list {
-  display: grid;
-  gap: 8px;
-}
-
-.recent-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-}
-
-.recent-item > .ghost {
-  justify-content: flex-start;
-  overflow: hidden;
-  text-align: left;
-}
-
-.recent-remove {
-  width: 42px;
-  padding-inline: 0;
-}
-
 .board {
   width: 100%;
   max-width: 100%;
@@ -999,6 +969,32 @@ label {
   gap: 10px;
 }
 
+.editor-tools {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--muted);
+  padding: 12px;
+}
+
+.editor-tools > span {
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.editor-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.editor-tool-grid button {
+  min-width: 0;
+}
+
 .fid-options {
   display: grid;
   gap: 10px;
@@ -1102,12 +1098,7 @@ label {
   width: min(100%, 720px);
 }
 
-.template-modal {
-  width: min(100%, 520px);
-}
-
-.catalog-grid,
-.template-options {
+.catalog-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
@@ -1173,10 +1164,6 @@ label {
   .phase-print-toggle {
     grid-column: 1 / -1;
     justify-content: center;
-  }
-
-  .template-options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .row-meta {
@@ -1312,18 +1299,14 @@ label {
   }
 
   .editor-grid,
-  .catalog-grid,
-  .template-options {
+  .editor-tool-grid,
+  .catalog-grid {
     grid-template-columns: 1fr;
   }
 
   .modal-actions {
     align-items: stretch;
     flex-direction: column-reverse;
-  }
-
-  .recent-item {
-    grid-template-columns: minmax(0, 1fr) 40px;
   }
 
   .history-dock {
@@ -1383,11 +1366,7 @@ label {
   .desktop-row-actions,
   .phase-print-desktop,
   .desktop-project-details,
-  .board-actions .ghost,
-  .mobile-row-view,
-  .mobile-overview-list,
-  .mobile-overview-mode .mobile-overview-list,
-  .mobile-rail-mode .mobile-overview-list {
+  .board-actions .ghost {
     display: none !important;
   }
 
@@ -1411,7 +1390,6 @@ label {
     display: inline-flex;
   }
 
-  .mobile-overview-mode .rail-breaker-row,
   .mobile-rail-mode .rail-breaker-row {
     display: flex !important;
   }

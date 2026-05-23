@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { deleteRecentProject, parseProjectJson, readRecentProjects, saveProjectToLocalStorage } from "./projectStorage";
+import { parseProjectJson, saveProjectToLocalStorage } from "./projectStorage";
 
 beforeEach(() => {
   const store = new Map();
@@ -48,27 +48,12 @@ describe("project storage", () => {
     expect(project.rows[0].breakers[0].loadW).toBe("2500");
   });
 
-  it("keeps deleted recent projects hidden from autosave", () => {
+  it("saves the current project locally", () => {
     const rows = [{ id: "r1", name: "Red 1", capacity: 12, breakers: [] }];
     const projectInfo = { objectName: "Objekat" };
     const savedAt = saveProjectToLocalStorage("Tabla", rows, projectInfo);
 
-    expect(readRecentProjects()).toHaveLength(1);
-
-    deleteRecentProject(savedAt);
-    saveProjectToLocalStorage("Tabla", rows, projectInfo);
-
-    expect(readRecentProjects()).toHaveLength(0);
-  });
-
-  it("allows a changed project to appear after an old recent entry was deleted", () => {
-    const rows = [{ id: "r1", name: "Red 1", capacity: 12, breakers: [] }];
-    const projectInfo = { objectName: "Objekat" };
-    const savedAt = saveProjectToLocalStorage("Tabla", rows, projectInfo);
-
-    deleteRecentProject(savedAt);
-    saveProjectToLocalStorage("Tabla", [{ ...rows[0], capacity: 18 }], projectInfo);
-
-    expect(readRecentProjects()).toHaveLength(1);
+    expect(savedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(localStorage.getItem("tablogenerator.project.v2")).toContain('"boardName":"Tabla"');
   });
 });

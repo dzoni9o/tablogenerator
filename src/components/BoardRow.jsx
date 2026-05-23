@@ -13,6 +13,7 @@ export function BoardRow({
   onAddFid,
   onAddBell,
   onAddElement,
+  onAddCatalog,
   onAddRowAfter,
   onRemoveRow,
   onRenameRow,
@@ -88,6 +89,16 @@ export function BoardRow({
                   }}
                 >
                   Element
+                </button>
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() => {
+                    onAddCatalog(row.id);
+                    setMoreMenuOpen(false);
+                  }}
+                >
+                  Katalog
                 </button>
                 <button
                   type="button"

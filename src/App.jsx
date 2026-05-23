@@ -3,7 +3,6 @@ import { Board } from "./components/Board";
 import { BreakerEditor } from "./components/BreakerEditor";
 import { CatalogModal } from "./components/CatalogModal";
 import { ElementSizeModal } from "./components/ElementSizeModal";
-import { FidChoiceModal } from "./components/FidChoiceModal";
 import { PdfExportModal } from "./components/PdfExportModal";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { ProtectionChoiceModal } from "./components/ProtectionChoiceModal";
@@ -107,8 +106,9 @@ export default function App() {
             exportPdf({ includePhaseBalance: printPhaseBalance });
           }}
           rowHandlers={{
-            onAddBreaker: isSmallScreen ? project.addBreaker : (rowId) => project.addCatalogItem(rowId, "breaker"),
-            onAddElement: isSmallScreen ? project.addCustomElement : project.setCatalogTargetRow,
+            onAddBreaker: project.addBreaker,
+            onAddElement: project.addCustomElement,
+            onAddCatalog: project.setCatalogTargetRow,
             onAddFid: project.setFidTargetRow,
             onAddBell: (rowId) => project.addSpecial(rowId, "bell"),
             onAddRowAfter: project.addRowAfter,
@@ -128,9 +128,13 @@ export default function App() {
 
       {project.editorOpen && (
         <BreakerEditor
+          rows={project.rows}
           selectedBreaker={project.selectedBreaker}
           selectedRow={project.selectedRow}
           onClose={project.closeEditor}
+          onDuplicate={project.duplicateSelectedBreaker}
+          onMove={project.moveSelected}
+          onMoveToRow={project.moveSelectedToRow}
           onRemove={project.removeBreaker}
           onSave={project.saveSelected}
           onUpdate={project.updateSelected}
@@ -169,26 +173,13 @@ export default function App() {
         />
       )}
 
-      {project.fidTargetRow && isSmallScreen && (
+      {project.fidTargetRow && (
         <ProtectionChoiceModal
           mode="fid"
           onCancel={() => {
             project.setFidTargetRow(null);
-            project.setPendingFidPhase(null);
           }}
           onConfirm={(values) => project.addFid(project.fidTargetRow, values)}
-        />
-      )}
-
-      {project.fidTargetRow && !isSmallScreen && (
-        <FidChoiceModal
-          pendingPhase={project.pendingFidPhase}
-          onCancel={() => {
-            project.setFidTargetRow(null);
-            project.setPendingFidPhase(null);
-          }}
-          onChoosePhase={project.setPendingFidPhase}
-          onConfirm={(withNeutral) => project.addFid(project.fidTargetRow, project.pendingFidPhase, withNeutral)}
         />
       )}
     </main>

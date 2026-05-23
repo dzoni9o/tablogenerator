@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { canFitBreaker, canMoveBreaker, getRowUsedModules, getTotalCapacity, getTotalUsedModules } from "./boardOperations";
-import { createRowsFromTemplate } from "../data/templates";
 
 describe("board module calculations", () => {
   it("counts module usage per row", () => {
@@ -20,13 +19,6 @@ describe("board module calculations", () => {
 
     expect(getTotalUsedModules(rows)).toBe(7);
     expect(getTotalCapacity(rows)).toBe(30);
-  });
-
-  it("creates templates with capacities", () => {
-    const rows = createRowsFromTemplate("house-three");
-
-    expect(rows.length).toBeGreaterThan(1);
-    expect(rows.every((row) => row.capacity > 0)).toBe(true);
   });
 
   it("blocks additions that exceed row capacity", () => {

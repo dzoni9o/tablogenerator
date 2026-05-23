@@ -2,8 +2,10 @@ import { consumerIcons } from "../data/consumerIcons";
 import { descriptionLimit, getAmpLimit, labelLimit } from "../utils/breakerFactory";
 import { phaseOptions } from "../utils/phaseBalance";
 
-export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove, onSave, onUpdate }) {
+export function BreakerEditor({ rows, selectedBreaker, selectedRow, onClose, onDuplicate, onMove, onMoveToRow, onRemove, onSave, onUpdate }) {
   if (!selectedBreaker || !selectedRow) return null;
+
+  const selectedIndex = selectedRow.breakers.findIndex((breaker) => breaker.id === selectedBreaker.id);
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
@@ -73,6 +75,31 @@ export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove,
             </select>
           </label>
         )}
+
+        <div className="editor-tools" aria-label="Raspored modula">
+          <span>Raspored</span>
+          <div className="editor-tool-grid">
+            <button type="button" className="ghost" disabled={selectedIndex <= 0} onClick={() => onMove("left")}>
+              Levo
+            </button>
+            <button type="button" className="ghost" disabled={selectedIndex < 0 || selectedIndex >= selectedRow.breakers.length - 1} onClick={() => onMove("right")}>
+              Desno
+            </button>
+            <button type="button" className="ghost" onClick={onDuplicate}>
+              Kopiraj modul
+            </button>
+          </div>
+          <label>
+            Prebaci u red
+            <select value={selectedRow.id} onChange={(event) => onMoveToRow(event.target.value)}>
+              {rows.map((row, index) => (
+                <option key={row.id} value={row.id}>
+                  {row.name || `Red ${index + 1}`}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
         <div className="modal-actions">
           <button type="button" className="danger" onClick={() => onRemove(selectedRow.id, selectedBreaker.id)}>

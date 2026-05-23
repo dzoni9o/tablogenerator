@@ -2,8 +2,6 @@ import { defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
 
 const storageKey = "tablogenerator.project.v2";
-const recentProjectsKey = "tablogenerator.recent.v1";
-const hiddenRecentProjectsKey = "tablogenerator.recent.hidden.v1";
 const projectVersion = 2;
 
 export function createProject(boardName, rows, projectInfo = defaultProjectInfo) {
@@ -29,7 +27,6 @@ export function readSavedProject() {
 export function saveProjectToLocalStorage(boardName, rows, projectInfo) {
   const project = createProject(boardName, rows, projectInfo);
   localStorage.setItem(storageKey, JSON.stringify(project));
-  saveRecentProject(project);
   return project.savedAt;
 }
 
@@ -40,18 +37,16 @@ export function downloadProjectJson(boardName, rows, projectInfo) {
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = `${safeFileName(boardName || "tabla")}.json`;
+  link.download = `${safeFileName(boardName || "tabla")}.tgen`;
   link.click();
   URL.revokeObjectURL(url);
 }
 
 export async function shareProjectJson(boardName, rows, projectInfo) {
   const project = createProject(boardName, rows, projectInfo);
-  const fileName = `${safeFileName(boardName || "tabla")}.json`;
+  const fileName = `${safeFileName(boardName || "tabla")}.tgen`;
   const data = JSON.stringify(project, null, 2);
   const file = new File([data], fileName, { type: "application/json" });
-
-  saveRecentProject(project);
 
   if (navigator.canShare?.({ files: [file] })) {
     await navigator.share({ title: fileName, files: [file] });
@@ -71,34 +66,13 @@ export function parseProjectJson(text) {
   return normalizeProject(JSON.parse(text));
 }
 
-export function readRecentProjects() {
-  try {
-    const hidden = readHiddenRecentProjects();
-    return readRecentProjectsRaw().filter((item) => !hidden.includes(getRecentIdentity(item)));
-  } catch {
-    return [];
-  }
-}
-
-export function deleteRecentProject(savedAt) {
-  const recent = readRecentProjectsRaw();
-  const removedItem = recent.find((item) => item.savedAt === savedAt);
-  const removedIdentity = removedItem ? getRecentIdentity(removedItem) : null;
-  const hidden = removedIdentity ? [...new Set([...readHiddenRecentProjects(), removedIdentity])].slice(-20) : readHiddenRecentProjects();
-  const next = recent.filter((item) => item.savedAt !== savedAt && (!removedIdentity || getRecentIdentity(item) !== removedIdentity));
-
-  localStorage.setItem(hiddenRecentProjectsKey, JSON.stringify(hidden));
-  localStorage.setItem(recentProjectsKey, JSON.stringify(next));
-  return next;
-}
-
 function normalizeProject(project) {
   if (!project || typeof project !== "object") {
-    throw new Error("JSON fajl nije projekat table.");
+    throw new Error("Fajl nije projekat table.");
   }
 
   const rows = Array.isArray(project.rows) ? project.rows : null;
-  if (!rows) throw new Error("JSON fajl nema listu redova.");
+  if (!rows) throw new Error("Fajl nema listu redova.");
 
   return {
     boardName: typeof project.boardName === "string" ? project.boardName : defaultBoardName,
@@ -157,49 +131,4 @@ function asString(value, fallback) {
 
 function safeFileName(value) {
   return value.replace(/[\\/:*?"<>|]/g, "-").trim() || "tabla";
-}
-
-function saveRecentProject(project) {
-  const recent = readRecentProjectsRaw();
-  const hidden = readHiddenRecentProjects();
-  const summary = {
-    boardName: project.boardName,
-    objectName: project.projectInfo.objectName,
-    savedAt: project.savedAt,
-    project,
-  };
-  const summaryIdentity = getRecentIdentity(summary);
-
-  if (hidden.includes(summaryIdentity)) {
-    const nextWithoutHidden = recent.filter((item) => getRecentIdentity(item) !== summaryIdentity);
-    localStorage.setItem(recentProjectsKey, JSON.stringify(nextWithoutHidden));
-    return;
-  }
-
-  const next = [summary, ...recent.filter((item) => item.boardName !== project.boardName)].slice(0, 5);
-  localStorage.setItem(recentProjectsKey, JSON.stringify(next));
-}
-
-function readHiddenRecentProjects() {
-  try {
-    return JSON.parse(localStorage.getItem(hiddenRecentProjectsKey) ?? "[]");
-  } catch {
-    return [];
-  }
-}
-
-function readRecentProjectsRaw() {
-  try {
-    return JSON.parse(localStorage.getItem(recentProjectsKey) ?? "[]");
-  } catch {
-    return [];
-  }
-}
-
-function getRecentIdentity(item) {
-  return JSON.stringify({
-    boardName: item.boardName || "",
-    objectName: item.objectName || item.project?.projectInfo?.objectName || "",
-    rows: item.project?.rows || [],
-  });
 }

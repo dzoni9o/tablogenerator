@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { createBlankRows, createInitialRows, defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
-import { createRowsFromTemplate } from "../data/templates";
 import {
   createBreakerWithParams,
   createCatalogBreaker,
@@ -40,7 +39,6 @@ export function useBoardProject() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [originalBreaker, setOriginalBreaker] = useState(null);
   const [fidTargetRow, setFidTargetRow] = useState(null);
-  const [pendingFidPhase, setPendingFidPhase] = useState(null);
   const [breakerTargetRow, setBreakerTargetRow] = useState(null);
   const [customElementTargetRow, setCustomElementTargetRow] = useState(null);
   const [catalogTargetRow, setCatalogTargetRow] = useState(null);
@@ -48,7 +46,7 @@ export function useBoardProject() {
   const [capacityMessage, setCapacityMessage] = useTimedMessage(2000);
   const [pastRows, setPastRows] = useState([]);
   const [futureRows, setFutureRows] = useState([]);
-  const { autosavedAt, recentProjects, removeRecentProject } = useProjectAutosave(boardName, rows, projectInfo);
+  const { autosavedAt } = useProjectAutosave(boardName, rows, projectInfo);
 
   const selectedBreaker = useMemo(() => findBreaker(rows, selected), [rows, selected]);
   const selectedRow = useMemo(() => findBreakerRow(rows, selected), [rows, selected]);
@@ -57,10 +55,15 @@ export function useBoardProject() {
   const totalCapacity = useMemo(() => getTotalCapacity(rows), [rows]);
   const phaseBalance = useMemo(() => calculatePhaseBalance(rows), [rows]);
 
-  function commitRows(updater) {
+  function commitRows(updater, options = {}) {
+    const { history = true } = options;
+
     setRows((current) => {
-      setPastRows((past) => [...past.slice(-19), current]);
-      setFutureRows([]);
+      if (history) {
+        setPastRows((past) => [...past.slice(-19), current]);
+        setFutureRows([]);
+      }
+
       return typeof updater === "function" ? updater(current) : updater;
     });
   }
@@ -196,7 +199,8 @@ export function useBoardProject() {
     const fid = createFid(phase, fidCount, fidParams);
     const neutralCount = allBreakers.filter((breaker) => breaker.type === "neutral").length + 1;
     const neutral = createNeutralSwitch(neutralCount, fid.id);
-    const newBreakers = withNeutral ? [fid, neutral] : [fid];
+    const includeNeutral = Boolean(fidParams.withNeutral ?? withNeutral);
+    const newBreakers = includeNeutral ? [fid, neutral] : [fid];
     const neededModules = newBreakers.reduce((total, breaker) => total + (Number(breaker.poles) || 1), 0);
     const freeModules = targetRow
       ? (Number(targetRow.capacity) || 0) - targetRow.breakers.reduce((total, breaker) => total + (Number(breaker.poles) || 1), 0)
@@ -211,7 +215,6 @@ export function useBoardProject() {
         });
       }
       setFidTargetRow(null);
-      setPendingFidPhase(null);
       return;
     }
 
@@ -223,7 +226,6 @@ export function useBoardProject() {
         setCapacityMessage(null);
         setEditorOpen(false);
         setFidTargetRow(null);
-        setPendingFidPhase(null);
         return { ...row, breakers: [...row.breakers, ...newBreakers] };
       }),
     );
@@ -268,12 +270,74 @@ export function useBoardProject() {
       field === "amp" ? getAmpLimit(selectedBreaker) : field === "label" ? labelLimit : field === "description" ? descriptionLimit : value.length;
     const nextValue = value.slice(0, limit);
 
+    commitRows(
+      (current) =>
+        current.map((row) => ({
+          ...row,
+          breakers: row.breakers.map((breaker) => (breaker.id === selected ? { ...breaker, [field]: nextValue } : breaker)),
+        })),
+      { history: false },
+    );
+  }
+
+  function moveSelected(direction) {
+    if (!selected) return;
+
     commitRows((current) =>
       current.map((row) => ({
         ...row,
-        breakers: row.breakers.map((breaker) => (breaker.id === selected ? { ...breaker, [field]: nextValue } : breaker)),
+        breakers: moveBreakerInsideRow(row.breakers, selected, direction),
       })),
     );
+  }
+
+  function moveSelectedToRow(targetRowId) {
+    if (!selected) return;
+
+    const selectedRow = findBreakerRow(rows, selected);
+    if (!selectedRow || selectedRow.id === targetRowId) return;
+
+    if (!canMoveBreaker(rows, selected, targetRowId)) {
+      const targetRow = rows.find((row) => row.id === targetRowId);
+      const breaker = findBreaker(rows, selected);
+      if (targetRow && breaker) showCapacityMessage(targetRow, breaker);
+      return;
+    }
+
+    commitRows((current) => moveBreaker(current, selected, targetRowId));
+    setCapacityMessage(null);
+  }
+
+  function duplicateSelectedBreaker() {
+    const breaker = selectedBreaker;
+    const row = selectedRow;
+    if (!breaker || !row) return;
+
+    const clone = {
+      ...breaker,
+      id: createId(),
+      linkedFidId: null,
+      label: nextCopyLabel(breaker.label),
+    };
+
+    if (!canFitBreaker(row, clone)) {
+      showCapacityMessage(row, clone);
+      return;
+    }
+
+    commitRows((current) =>
+      current.map((currentRow) => {
+        if (currentRow.id !== row.id) return currentRow;
+
+        const selectedIndex = currentRow.breakers.findIndex((item) => item.id === breaker.id);
+        const nextBreakers = [...currentRow.breakers];
+        nextBreakers.splice(selectedIndex + 1, 0, clone);
+        return { ...currentRow, breakers: nextBreakers };
+      }),
+    );
+    setSelected(clone.id);
+    setOriginalBreaker(null);
+    setCapacityMessage(null);
   }
 
   function saveSelected() {
@@ -296,7 +360,7 @@ export function useBoardProject() {
   }
 
   function updateRowName(rowId, name) {
-    commitRows((current) => current.map((row) => (row.id === rowId ? { ...row, name } : row)));
+    commitRows((current) => current.map((row) => (row.id === rowId ? { ...row, name } : row)), { history: false });
   }
 
   function updateRowCapacity(rowId, capacity) {
@@ -376,24 +440,7 @@ export function useBoardProject() {
       setCustomElementTargetRow(null);
       setImportError("");
     } catch (error) {
-      setImportError(error.message || "Ne mogu da ucitam JSON fajl.");
-    }
-  }
-
-  function loadProject(project) {
-    try {
-      const normalized = parseProjectJson(JSON.stringify(project));
-      setBoardName(normalized.boardName);
-      setProjectInfo(normalized.projectInfo);
-      setRows(normalized.rows);
-      setPastRows([]);
-      setFutureRows([]);
-      setSelected(normalized.rows.flatMap((row) => row.breakers)[0]?.id ?? null);
-      setEditorOpen(false);
-      setImportError("");
-      setCapacityMessage(null);
-    } catch {
-      setImportError("Ne mogu da ucitam sacuvani projekat.");
+      setImportError(error.message || "Ne mogu da ucitam projektni fajl.");
     }
   }
 
@@ -407,17 +454,6 @@ export function useBoardProject() {
     setSelected(null);
     setEditorOpen(false);
     setCustomElementTargetRow(null);
-  }
-
-  function duplicateProject() {
-    setBoardName(`${boardName} kopija`);
-  }
-
-  function applyTemplate(templateId) {
-    const nextRows = createRowsFromTemplate(templateId);
-    commitRows(nextRows);
-    setSelected(nextRows.flatMap((row) => row.breakers)[0]?.id ?? null);
-    setEditorOpen(false);
   }
 
   function undo() {
@@ -459,20 +495,17 @@ export function useBoardProject() {
     dropTarget,
     editorOpen,
     fidTargetRow,
-    pendingFidPhase,
     breakerTargetRow,
     customElementTargetRow,
     catalogTargetRow,
     autosavedAt,
     importError,
     capacityMessage,
-    recentProjects,
     canUndo: pastRows.length > 0,
     canRedo: futureRows.length > 0,
     setBoardName,
     updateProjectInfo,
     setFidTargetRow,
-    setPendingFidPhase,
     setBreakerTargetRow,
     setCustomElementTargetRow,
     setCatalogTargetRow,
@@ -489,6 +522,9 @@ export function useBoardProject() {
     closeEditor,
     updateRowName,
     updateRowCapacity,
+    moveSelected,
+    moveSelectedToRow,
+    duplicateSelectedBreaker,
     startDrag,
     clearDrag,
     allowDrop,
@@ -497,12 +533,26 @@ export function useBoardProject() {
     exportJson,
     shareJson,
     importJsonFile,
-    loadProject,
-    removeRecentProject,
     newProject,
-    duplicateProject,
-    applyTemplate,
     undo,
     redo,
   };
+}
+
+function moveBreakerInsideRow(breakers, breakerId, direction) {
+  const index = breakers.findIndex((breaker) => breaker.id === breakerId);
+  if (index < 0) return breakers;
+
+  const targetIndex = direction === "left" ? index - 1 : index + 1;
+  if (targetIndex < 0 || targetIndex >= breakers.length) return breakers;
+
+  const next = [...breakers];
+  [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+  return next;
+}
+
+function nextCopyLabel(label = "") {
+  const cleanLabel = String(label || "").trim();
+  const base = cleanLabel || "EL";
+  return base.length >= labelLimit ? base : `${base}K`.slice(0, labelLimit);
 }

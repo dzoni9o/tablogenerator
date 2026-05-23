@@ -11,6 +11,7 @@ export function ProtectionChoiceModal({ mode, onCancel, onConfirm }) {
   const [fidPhase, setFidPhase] = useState("single");
   const [amp, setAmp] = useState("");
   const [customAmp, setCustomAmp] = useState("");
+  const [sensitivity, setSensitivity] = useState("");
   const [step, setStep] = useState(isFid ? "phase" : "amp");
 
   const selectedAmp = useMemo(() => cleanAmp(amp === "custom" ? customAmp : amp), [amp, customAmp]);
@@ -59,12 +60,37 @@ export function ProtectionChoiceModal({ mode, onCancel, onConfirm }) {
             <span>Osetljivost</span>
             <div className="amp-grid">
               {fidSensitivities.map((item) => (
-                <button key={item} type="button" onClick={() => onConfirm({ phase: fidPhase, amp: selectedAmp, sensitivity: item })}>
+                <button
+                  key={item}
+                  type="button"
+                  className={sensitivity === item ? "active" : ""}
+                  onClick={() => {
+                    setSensitivity(item);
+                    setStep("neutral");
+                  }}
+                >
                   {item}
                 </button>
               ))}
             </div>
             <button type="button" className="ghost back-choice" onClick={() => setStep("amp")}>
+              Nazad
+            </button>
+          </div>
+        ) : isFid && step === "neutral" ? (
+          <div className="choice-group">
+            <span>N prekid</span>
+            <div className="fid-options">
+              <button type="button" onClick={() => onConfirm({ phase: fidPhase, amp: selectedAmp, sensitivity, withNeutral: true })}>
+                <strong>Dodaj N prekid</strong>
+                <span>Bice dodat odmah pored FID sklopke</span>
+              </button>
+              <button type="button" onClick={() => onConfirm({ phase: fidPhase, amp: selectedAmp, sensitivity, withNeutral: false })}>
+                <strong>Samo FID</strong>
+                <span>Bez dodatnog N prekida</span>
+              </button>
+            </div>
+            <button type="button" className="ghost back-choice" onClick={() => setStep("sensitivity")}>
               Nazad
             </button>
           </div>
@@ -142,6 +168,7 @@ function getModalTitle(isFid, step) {
   if (!isFid) return "Izaberi parametre";
   if (step === "phase") return "Monofazni ili trofazni";
   if (step === "sensitivity") return "Izaberi osetljivost";
+  if (step === "neutral") return "Dodati N prekid";
   return "Izaberi parametre";
 }
 
