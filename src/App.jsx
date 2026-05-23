@@ -7,8 +7,6 @@ import { FidChoiceModal } from "./components/FidChoiceModal";
 import { PdfExportModal } from "./components/PdfExportModal";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { ProtectionChoiceModal } from "./components/ProtectionChoiceModal";
-import { RecentProjects } from "./components/RecentProjects";
-import { TemplatePicker } from "./components/TemplatePicker";
 import { Topbar } from "./components/Topbar";
 import { useBoardProject } from "./hooks/useBoardProject";
 
@@ -18,7 +16,6 @@ export default function App() {
   const [exportError, setExportError] = useState("");
   const [exportBusy, setExportBusy] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
-  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [pdfDetailsOpen, setPdfDetailsOpen] = useState(false);
   const [printPhaseBalance, setPrintPhaseBalance] = useState(false);
   const [includePhaseBalanceInPdf, setIncludePhaseBalanceInPdf] = useState(false);
@@ -44,13 +41,10 @@ export default function App() {
         boardName={project.boardName}
         autosaveLabel={autosaveLabel}
         onBoardNameChange={project.setBoardName}
-        onDuplicateProject={project.duplicateProject}
         onExportJson={project.exportJson}
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
-        onOpenTemplates={() => setTemplatePickerOpen(true)}
         onShareProject={shareProject}
-        recentProjectsNode={<RecentProjects items={project.recentProjects} onLoad={project.loadProject} onRemove={project.removeRecentProject} />}
       />
 
       <aside className="history-dock" aria-label="Istorija izmena">
@@ -140,15 +134,6 @@ export default function App() {
           onRemove={project.removeBreaker}
           onSave={project.saveSelected}
           onUpdate={project.updateSelected}
-        />
-      )}
-
-      {templatePickerOpen && (
-        <TemplatePicker
-          onApply={project.applyTemplate}
-          onClose={() => {
-            setTemplatePickerOpen(false);
-          }}
         />
       )}
 

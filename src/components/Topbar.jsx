@@ -4,13 +4,10 @@ export function Topbar({
   boardName,
   autosaveLabel,
   onBoardNameChange,
-  onDuplicateProject,
   onExportJson,
   onImportClick,
   onNewProject,
-  onOpenTemplates,
   onShareProject,
-  recentProjectsNode,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [smallScreen, setSmallScreen] = useState(() => window.matchMedia?.("(max-width: 900px)").matches ?? false);
@@ -69,13 +66,6 @@ export function Topbar({
             <button type="button" className="ghost" onClick={onNewProject}>
               Novi projekat
             </button>
-            <button type="button" className="ghost" onClick={onDuplicateProject}>
-              Kopiraj projekat
-            </button>
-            <button type="button" className="ghost" onClick={onOpenTemplates}>
-              Sabloni
-            </button>
-            {recentProjectsNode}
             <button type="button" className="ghost" onClick={onImportClick}>
               Ucitaj projekat
             </button>
