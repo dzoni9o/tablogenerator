@@ -1,8 +1,8 @@
-export function ProjectDetails({ projectInfo, onUpdate }) {
+export function ProjectDetails({ projectInfo, onUpdate, title = "Dokumentacija", className = "" }) {
   return (
-    <section className="project-details" aria-label="Dokumentacija">
+    <section className={["project-details", className].filter(Boolean).join(" ")} aria-label={title}>
       <div>
-        <h2>Dokumentacija</h2>
+        <h2>{title}</h2>
       </div>
       <div className="project-fields">
         <label>

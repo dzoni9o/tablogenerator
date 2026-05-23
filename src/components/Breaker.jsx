@@ -11,6 +11,8 @@ export function Breaker({
   onDragStart,
   onDrop,
 }) {
+  const title = [breaker.amp, breaker.label, breaker.phase, breaker.description].filter(Boolean).join(" / ");
+
   return (
     <button
       type="button"
@@ -27,6 +29,8 @@ export function Breaker({
         .join(" ")}
       draggable
       style={{ "--module-span": breaker.poles || 1 }}
+      title={title}
+      aria-label={title}
       onClick={onClick}
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}

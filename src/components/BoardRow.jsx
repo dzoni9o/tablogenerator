@@ -69,7 +69,7 @@ export function BoardRow({
             {usedModules}/{row.capacity}M
           </span>
         </div>
-        <div className="row-actions">
+        <div className="row-actions desktop-row-actions">
           <button type="button" onClick={() => onAddBreaker(row.id)}>
             Dodaj osigurac
           </button>
@@ -112,6 +112,23 @@ export function BoardRow({
               </div>
             )}
           </div>
+          <button type="button" className="danger" onClick={() => onRemoveRow(row.id)}>
+            Obrisi red
+          </button>
+        </div>
+        <div className="row-actions mobile-row-actions">
+          <button type="button" onClick={() => onAddBreaker(row.id)}>
+            Dodaj osigurac
+          </button>
+          <button type="button" className="ghost" onClick={() => onAddFid(row.id)}>
+            FID
+          </button>
+          <button type="button" className="ghost" onClick={() => onAddBell(row.id)}>
+            Zvono
+          </button>
+          <button type="button" className="ghost" onClick={() => onAddElement(row.id)}>
+            Element
+          </button>
           <button type="button" className="danger" onClick={() => onRemoveRow(row.id)}>
             Obrisi red
           </button>

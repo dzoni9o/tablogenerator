@@ -64,6 +64,7 @@ export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove,
           <label>
             Slicica potrosaca
             <select value={selectedBreaker.icon || "light"} onChange={(event) => onUpdate("icon", event.target.value)}>
+              <option value="none">Bez slicice</option>
               {consumerIcons.map((icon) => (
                 <option key={icon.id} value={icon.id}>
                   {icon.label}
@@ -75,7 +76,7 @@ export function BreakerEditor({ selectedBreaker, selectedRow, onClose, onRemove,
 
         <div className="modal-actions">
           <button type="button" className="danger" onClick={() => onRemove(selectedRow.id, selectedBreaker.id)}>
-            Obrisi osigurac
+            Obrisati modul
           </button>
           <button type="button" onClick={onSave}>
             Sacuvaj

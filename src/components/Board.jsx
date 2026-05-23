@@ -9,7 +9,10 @@ export function Board({
   usedModules,
   phaseBalance,
   printPhaseBalance,
+  includePhaseBalanceInPdf,
+  exportBusy,
   onPrintPhaseBalanceChange,
+  onIncludePhaseBalanceInPdfChange,
   selectedId,
   draggingId,
   dropTarget,
@@ -17,6 +20,13 @@ export function Board({
   onExportPdf,
   rowHandlers,
 }) {
+  const phaseBalanceClassName = [
+    phaseBalance.isBalanced ? "phase-balance" : "phase-balance warning",
+    printPhaseBalance || includePhaseBalanceInPdf ? "print-enabled" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <section ref={boardRef} className="board" aria-label="Raspored osiguraca" data-board-name={boardName || "Nova tabla"}>
       <div className="board-head">
@@ -28,8 +38,8 @@ export function Board({
           <button type="button" className="ghost" onClick={onPrint}>
             Stampaj
           </button>
-          <button type="button" className="pdf-action" onClick={onExportPdf}>
-            Izvezi u PDF
+          <button type="button" className="pdf-action" disabled={exportBusy} onClick={onExportPdf}>
+            {exportBusy ? "Priprema PDF..." : "Izvezi u PDF"}
           </button>
         </div>
       </div>
@@ -47,15 +57,23 @@ export function Board({
         ))}
       </div>
 
-      <div className={[phaseBalance.isBalanced ? "phase-balance" : "phase-balance warning", printPhaseBalance ? "print-enabled" : ""].filter(Boolean).join(" ")}>
+      <div className={phaseBalanceClassName}>
         <strong>Balans faza</strong>
         <span>L1 {phaseBalance.totals.L1.toFixed(0)} W</span>
         <span>L2 {phaseBalance.totals.L2.toFixed(0)} W</span>
         <span>L3 {phaseBalance.totals.L3.toFixed(0)} W</span>
         <em>Razlika {phaseBalance.spread.toFixed(0)} W</em>
-        <label className="phase-print-toggle">
+        <label className="phase-print-toggle phase-print-desktop">
           <input type="checkbox" checked={printPhaseBalance} onChange={(event) => onPrintPhaseBalanceChange(event.target.checked)} />
           Stampaj
+        </label>
+        <label className="phase-print-toggle phase-pdf-mobile">
+          <input
+            type="checkbox"
+            checked={includePhaseBalanceInPdf}
+            onChange={(event) => onIncludePhaseBalanceInPdfChange(event.target.checked)}
+          />
+          Dodaj u PDF
         </label>
       </div>
     </section>

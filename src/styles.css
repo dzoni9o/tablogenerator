@@ -148,6 +148,7 @@ textarea[readonly] {
 }
 
 .topbar {
+  position: relative;
   min-height: 82px;
   display: flex;
   align-items: center;
@@ -213,6 +214,142 @@ textarea[readonly] {
   min-width: 0;
   min-height: 42px;
   white-space: normal;
+}
+
+.floating-menu-button,
+.floating-menu-backdrop,
+.mobile-row-actions,
+.phase-pdf-mobile {
+  display: none;
+}
+
+.floating-menu-button {
+  position: fixed;
+  top: 12px;
+  right: 14px;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 14px);
+  z-index: 64;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border: 1px solid rgba(10, 10, 10, 0.16);
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow:
+    0 12px 34px rgba(10, 10, 10, 0.22),
+    0 0 0 4px rgba(255, 214, 10, 0.14);
+  padding: 0;
+}
+
+.floating-menu-button:hover,
+.floating-menu-button.open {
+  border-color: var(--foreground);
+  background: var(--brand);
+  color: var(--foreground);
+}
+
+.hamburger-lines {
+  width: 24px;
+  display: grid;
+  gap: 4px;
+}
+
+.hamburger-lines span {
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.floating-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  align-items: start;
+  justify-items: end;
+  background: rgba(10, 10, 10, 0.28);
+  overflow-y: auto;
+  padding: 76px 14px 18px;
+  padding: calc(env(safe-area-inset-top, 0px) + 76px) calc(env(safe-area-inset-right, 0px) + 14px) 18px 14px;
+}
+
+.floating-menu-panel {
+  width: min(100%, 380px);
+  border: 1px solid rgba(10, 10, 10, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 28px 80px rgba(10, 10, 10, 0.24);
+  backdrop-filter: blur(16px);
+  padding: 14px;
+}
+
+.floating-menu-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  padding: 2px 2px 12px;
+}
+
+.floating-menu-head p {
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.floating-menu-head strong {
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.floating-menu-grid {
+  display: grid;
+  gap: 9px;
+}
+
+.menu-card {
+  min-height: 68px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 214, 10, 0.13), rgba(255, 255, 255, 0) 58%),
+    var(--background);
+  color: var(--foreground);
+  padding: 12px 13px;
+  text-align: left;
+}
+
+.menu-card:hover,
+.menu-card:focus-visible {
+  border-color: var(--foreground);
+  background: var(--brand-soft);
+  color: var(--foreground);
+}
+
+.menu-card.primary {
+  border-color: rgba(10, 10, 10, 0.34);
+  background: var(--brand);
+}
+
+.menu-card-title {
+  font-size: 0.98rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.menu-card-text {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 720;
+  line-height: 1.25;
 }
 
 .icon-button {
@@ -285,6 +422,12 @@ textarea[readonly] {
   padding: 12px 14px;
   text-align: center;
   transform: translateX(-50%);
+}
+
+.capacity-toast.success {
+  border-color: rgba(10, 10, 10, 0.16);
+  background: var(--brand-soft);
+  color: var(--foreground);
 }
 
 .workspace {
@@ -882,6 +1025,79 @@ label {
   font-weight: 650;
 }
 
+.protection-choice-modal {
+  width: min(100%, 460px);
+}
+
+.choice-group {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.choice-group > span {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.segmented-options,
+.amp-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.segmented-options,
+.amp-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fid-phase-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.module-choice-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.segmented-options button,
+.amp-grid button {
+  min-height: 44px;
+  border-color: var(--border);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.segmented-options button.active,
+.amp-grid button.active {
+  border-color: var(--foreground);
+  background: var(--brand);
+  color: var(--foreground);
+}
+
+.custom-choice {
+  margin: 2px 0 0;
+}
+
+.choice-actions {
+  align-items: center;
+}
+
+.back-choice {
+  justify-self: start;
+}
+
+.project-details-compact {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.project-details-compact h2 {
+  font-size: 1rem;
+}
+
 .catalog-modal {
   width: min(100%, 720px);
 }
@@ -1157,6 +1373,191 @@ label {
   }
 }
 
+@media (max-width: 900px) {
+  .topbar {
+    justify-content: flex-start;
+    padding-right: 88px;
+  }
+
+  .desktop-project-actions,
+  .desktop-row-actions,
+  .phase-print-desktop,
+  .desktop-project-details,
+  .board-actions .ghost,
+  .mobile-row-view,
+  .mobile-overview-list,
+  .mobile-overview-mode .mobile-overview-list,
+  .mobile-rail-mode .mobile-overview-list {
+    display: none !important;
+  }
+
+  .floating-menu-button {
+    display: grid !important;
+    opacity: 1;
+    visibility: visible;
+    inset: 10px 10px auto auto;
+    z-index: 9999;
+  }
+
+  .floating-menu-backdrop {
+    display: grid;
+  }
+
+  .mobile-row-actions {
+    display: flex;
+  }
+
+  .phase-pdf-mobile {
+    display: inline-flex;
+  }
+
+  .mobile-overview-mode .rail-breaker-row,
+  .mobile-rail-mode .rail-breaker-row {
+    display: flex !important;
+  }
+
+  .board-head {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .board-actions {
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .board-actions span {
+    font-size: 0.82rem;
+  }
+
+  .phase-balance {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .phase-balance strong,
+  .phase-balance span,
+  .phase-balance em,
+  .phase-print-toggle {
+    grid-column: auto;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    padding: 5px 7px;
+  }
+
+  .row-toolbar {
+    gap: 10px;
+  }
+
+  .mobile-row-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mobile-row-actions button {
+    min-height: 38px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .breaker-row {
+    gap: 2px;
+    border-radius: 7px;
+    background:
+      linear-gradient(90deg, rgba(10, 10, 10, 0.06) 1px, transparent 1px) 0 0 / 9px 100%,
+      var(--muted);
+    padding: 10px 9px;
+  }
+
+  .breaker-row.row-drop-target {
+    background:
+      linear-gradient(90deg, rgba(10, 10, 10, 0.08) 1px, transparent 1px) 0 0 / 9px 100%,
+      var(--brand-soft);
+  }
+
+  .breaker {
+    --module-width: 26px;
+    flex-basis: calc((var(--module-width) * var(--module-span, 1)) + (2px * (var(--module-span, 1) - 1)));
+    width: calc((var(--module-width) * var(--module-span, 1)) + (2px * (var(--module-span, 1) - 1)));
+    height: 64px;
+    min-height: 64px;
+    grid-template-rows: 13px 10px 17px;
+    border-radius: 4px;
+    padding: 4px 3px;
+    box-shadow:
+      inset 0 1px 0 white,
+      inset -2px 0 0 rgba(10, 10, 10, 0.05),
+      0 1px 2px rgba(10, 10, 10, 0.1);
+  }
+
+  .breaker > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .breaker.active {
+    box-shadow:
+      inset 0 1px 0 white,
+      inset -2px 0 0 rgba(10, 10, 10, 0.06),
+      0 0 0 2px rgba(255, 214, 10, 0.68);
+  }
+
+  .breaker.drop-target {
+    box-shadow: -2px 0 0 var(--brand);
+  }
+
+  .breaker strong {
+    font-size: clamp(4.7px, calc(4.4px + (var(--module-span, 1) * 0.34px)), 6.1px);
+    line-height: 1.2;
+    padding: 0;
+  }
+
+  .breaker-label {
+    font-size: clamp(3.3px, calc(3.2px + (var(--module-span, 1) * 0.26px)), 4.6px);
+    line-height: 1.05;
+  }
+
+  .breaker-label em,
+  .breaker small {
+    display: none;
+  }
+
+  .icon-slot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  .breaker.fid .icon-slot {
+    width: 12px;
+  }
+
+  .consumer-icon {
+    width: 8px;
+    height: 8px;
+    stroke-width: 2.1;
+  }
+
+  .pdf-details-modal {
+    width: min(100%, calc(100vw - 20px));
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar {
+    padding-right: 78px;
+  }
+
+  .floating-menu-button {
+    right: 10px;
+    right: calc(env(safe-area-inset-right, 0px) + 10px);
+    width: 50px;
+    height: 50px;
+  }
+}
+
 @media print {
   @page {
     margin: 14mm 12mm 18mm;
@@ -1180,6 +1581,8 @@ label {
   }
 
   .topbar,
+  .floating-menu-button,
+  .floating-menu-backdrop,
   .board-head,
   .row-toolbar,
   .row-insert,

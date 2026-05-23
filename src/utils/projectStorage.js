@@ -45,6 +45,28 @@ export function downloadProjectJson(boardName, rows, projectInfo) {
   URL.revokeObjectURL(url);
 }
 
+export async function shareProjectJson(boardName, rows, projectInfo) {
+  const project = createProject(boardName, rows, projectInfo);
+  const fileName = `${safeFileName(boardName || "tabla")}.json`;
+  const data = JSON.stringify(project, null, 2);
+  const file = new File([data], fileName, { type: "application/json" });
+
+  saveRecentProject(project);
+
+  if (navigator.canShare?.({ files: [file] })) {
+    await navigator.share({ title: fileName, files: [file] });
+    return { fileName, shared: true };
+  }
+
+  if (navigator.share) {
+    await navigator.share({ title: fileName, text: data });
+    return { fileName, shared: true };
+  }
+
+  downloadProjectJson(boardName, rows, projectInfo);
+  return { fileName, shared: false };
+}
+
 export function parseProjectJson(text) {
   return normalizeProject(JSON.parse(text));
 }
@@ -112,6 +134,8 @@ function normalizeBreaker(breaker, index) {
     linkedFidId: breaker.linkedFidId ?? null,
     label: asString(breaker.label, `F${index + 1}`),
     amp: asString(breaker.amp, "B16"),
+    nominalAmp: asString(breaker.nominalAmp, ""),
+    sensitivity: asString(breaker.sensitivity, ""),
     phase: asString(breaker.phase, breaker.type === "neutral" || breaker.type === "busbar" ? "NPE" : "L1"),
     loadW: normalizeLoadWatts(breaker),
     description: asString(breaker.description, "Bez opisa"),

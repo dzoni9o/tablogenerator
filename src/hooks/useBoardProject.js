@@ -2,7 +2,16 @@ import { useMemo, useState } from "react";
 import { createBlankRows, createInitialRows, defaultBoardName } from "../data/initialBoard";
 import { defaultProjectInfo } from "../data/projectInfo";
 import { createRowsFromTemplate } from "../data/templates";
-import { createCatalogBreaker, createFid, createNeutralSwitch, getAmpLimit, labelLimit, descriptionLimit } from "../utils/breakerFactory";
+import {
+  createBreakerWithParams,
+  createCatalogBreaker,
+  createCustomElement,
+  createFid,
+  createNeutralSwitch,
+  getAmpLimit,
+  labelLimit,
+  descriptionLimit,
+} from "../utils/breakerFactory";
 import {
   canFitBreaker,
   canMoveBreaker,
@@ -16,7 +25,7 @@ import {
 import { calculatePhaseBalance } from "../utils/phaseBalance";
 import { useProjectAutosave } from "./useProjectAutosave";
 import { useTimedMessage } from "./useTimedMessage";
-import { downloadProjectJson, parseProjectJson, readSavedProject } from "../utils/projectStorage";
+import { downloadProjectJson, parseProjectJson, readSavedProject, shareProjectJson } from "../utils/projectStorage";
 import { createId } from "../utils/ids";
 
 export function useBoardProject() {
@@ -32,6 +41,8 @@ export function useBoardProject() {
   const [originalBreaker, setOriginalBreaker] = useState(null);
   const [fidTargetRow, setFidTargetRow] = useState(null);
   const [pendingFidPhase, setPendingFidPhase] = useState(null);
+  const [breakerTargetRow, setBreakerTargetRow] = useState(null);
+  const [customElementTargetRow, setCustomElementTargetRow] = useState(null);
   const [catalogTargetRow, setCatalogTargetRow] = useState(null);
   const [importError, setImportError] = useState("");
   const [capacityMessage, setCapacityMessage] = useTimedMessage(2000);
@@ -84,14 +95,15 @@ export function useBoardProject() {
   function removeRow(rowId) {
     commitRows((current) => {
       const nextRows = current.filter((row) => row.id !== rowId);
-      const stillSelected = nextRows.some((row) => row.breakers.some((breaker) => breaker.id === selected));
+      const safeRows = nextRows.length > 0 ? nextRows : createBlankRows();
+      const stillSelected = safeRows.some((row) => row.breakers.some((breaker) => breaker.id === selected));
 
       if (!stillSelected) {
-        setSelected(nextRows[0]?.breakers[0]?.id ?? null);
+        setSelected(safeRows[0]?.breakers[0]?.id ?? null);
         setEditorOpen(false);
       }
 
-      return nextRows;
+      return safeRows;
     });
   }
 
@@ -118,15 +130,70 @@ export function useBoardProject() {
     setCatalogTargetRow(null);
   }
 
-  function addBreaker(rowId) {
-    addCatalogItem(rowId, "breaker");
+  function addBreaker(rowId, params = null) {
+    if (!params) {
+      setBreakerTargetRow(rowId);
+      return;
+    }
+
+    const targetRow = rows.find((row) => row.id === rowId);
+    const breakerCount = rows.flatMap((currentRow) => currentRow.breakers).filter((breaker) => breaker.type === "breaker").length + 1;
+    const breaker = createBreakerWithParams(breakerCount, params);
+
+    if (!targetRow || !canFitBreaker(targetRow, breaker)) {
+      if (targetRow) showCapacityMessage(targetRow, breaker);
+      setBreakerTargetRow(null);
+      return;
+    }
+
+    commitRows((current) =>
+      current.map((row) => {
+        if (row.id !== rowId) return row;
+
+        setCapacityMessage(null);
+        setSelected(breaker.id);
+        return { ...row, breakers: [...row.breakers, breaker] };
+      }),
+    );
+    setBreakerTargetRow(null);
   }
 
-  function addFid(rowId, phase, withNeutral = false) {
+  function addCustomElement(rowId, poles = null) {
+    if (poles === null) {
+      setCustomElementTargetRow(rowId);
+      return;
+    }
+
+    const targetRow = rows.find((row) => row.id === rowId);
+    const element = createCustomElement(poles);
+
+    if (!targetRow || !canFitBreaker(targetRow, element)) {
+      if (targetRow) showCapacityMessage(targetRow, element);
+      setCustomElementTargetRow(null);
+      return;
+    }
+
+    commitRows((current) =>
+      current.map((row) => {
+        if (row.id !== rowId) return row;
+
+        setCapacityMessage(null);
+        setSelected(element.id);
+        setOriginalBreaker(null);
+        setEditorOpen(true);
+        setCustomElementTargetRow(null);
+        return { ...row, breakers: [...row.breakers, element] };
+      }),
+    );
+  }
+
+  function addFid(rowId, phaseOrParams = "single", withNeutral = false, params = {}) {
+    const fidParams = typeof phaseOrParams === "object" && phaseOrParams ? phaseOrParams : params;
+    const phase = typeof phaseOrParams === "string" ? phaseOrParams : fidParams.phase || "single";
     const targetRow = rows.find((row) => row.id === rowId);
     const allBreakers = rows.flatMap((currentRow) => currentRow.breakers);
     const fidCount = allBreakers.filter((breaker) => breaker.type === "fid").length + 1;
-    const fid = createFid(phase, fidCount);
+    const fid = createFid(phase, fidCount, fidParams);
     const neutralCount = allBreakers.filter((breaker) => breaker.type === "neutral").length + 1;
     const neutral = createNeutralSwitch(neutralCount, fid.id);
     const newBreakers = withNeutral ? [fid, neutral] : [fid];
@@ -290,6 +357,10 @@ export function useBoardProject() {
     downloadProjectJson(boardName, rows, projectInfo);
   }
 
+  function shareJson() {
+    return shareProjectJson(boardName, rows, projectInfo);
+  }
+
   async function importJsonFile(file) {
     if (!file) return;
 
@@ -302,6 +373,7 @@ export function useBoardProject() {
       setFutureRows([]);
       setSelected(project.rows.flatMap((row) => row.breakers)[0]?.id ?? null);
       setEditorOpen(false);
+      setCustomElementTargetRow(null);
       setImportError("");
     } catch (error) {
       setImportError(error.message || "Ne mogu da ucitam JSON fajl.");
@@ -334,6 +406,7 @@ export function useBoardProject() {
     setFutureRows([]);
     setSelected(null);
     setEditorOpen(false);
+    setCustomElementTargetRow(null);
   }
 
   function duplicateProject() {
@@ -387,6 +460,8 @@ export function useBoardProject() {
     editorOpen,
     fidTargetRow,
     pendingFidPhase,
+    breakerTargetRow,
+    customElementTargetRow,
     catalogTargetRow,
     autosavedAt,
     importError,
@@ -398,12 +473,15 @@ export function useBoardProject() {
     updateProjectInfo,
     setFidTargetRow,
     setPendingFidPhase,
+    setBreakerTargetRow,
+    setCustomElementTargetRow,
     setCatalogTargetRow,
     addRowAfter,
     removeRow,
     addBreaker,
     addFid,
     addSpecial,
+    addCustomElement,
     addCatalogItem,
     removeBreaker,
     updateSelected,
@@ -417,6 +495,7 @@ export function useBoardProject() {
     dropBreaker,
     selectBreaker,
     exportJson,
+    shareJson,
     importJsonFile,
     loadProject,
     removeRecentProject,
