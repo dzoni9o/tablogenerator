@@ -22,7 +22,7 @@ export default function App() {
   const project = useBoardProject();
   const autosaveLabel = project.autosavedAt
     ? `Autosave ${new Date(project.autosavedAt).toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" })}`
-    : "Autosave ukljucen";
+    : "Autosave uključen";
 
   useEffect(() => {
     const query = window.matchMedia?.("(max-width: 900px)");
@@ -193,7 +193,7 @@ export default function App() {
       await exportBoardPdf(boardRef.current, project.boardName, project.projectInfo, project.rows, project.phaseBalance, options);
       setPdfDetailsOpen(false);
     } catch {
-      setExportError("PDF export trenutno nije uspeo. Osvezi stranicu i pokusaj ponovo.");
+      setExportError("PDF export trenutno nije uspeo. Osveži stranicu i pokušaj ponovo.");
     } finally {
       setExportBusy(false);
     }
@@ -208,7 +208,7 @@ export default function App() {
       window.setTimeout(() => setSaveMessage(""), 3000);
     } catch {
       setSaveMessage("");
-      setExportError("Deljenje projekta trenutno nije uspelo. Pokusaj ponovo.");
+      setExportError("Deljenje projekta trenutno nije uspelo. Pokušaj ponovo.");
     }
   }
 }
