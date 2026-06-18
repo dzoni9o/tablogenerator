@@ -761,18 +761,18 @@ textarea[readonly] {
   grid-template-rows: 24px 16px 38px 1fr;
   align-items: center;
   justify-items: center;
-  border: 1px solid rgba(235, 224, 190, 0.22);
+  border: 1px solid rgba(10, 10, 10, 0.28);
   border-radius: 5px 5px 4px 4px;
   background:
-    linear-gradient(90deg, rgba(244, 236, 216, 0.06), rgba(244, 236, 216, 0) 38%),
-    linear-gradient(#333a2e, #2b3128);
-  color: var(--foreground);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 38%),
+    linear-gradient(#e8e8e3, #d4d4ce);
+  color: #1a1a1a;
   padding: 8px 7px;
   text-align: center;
   box-shadow:
-    inset 0 1px 0 rgba(244, 236, 216, 0.1),
-    inset -4px 0 0 rgba(0, 0, 0, 0.22),
-    0 1px 3px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset -4px 0 0 rgba(0, 0, 0, 0.08),
+    0 2px 5px rgba(0, 0, 0, 0.45);
   transition:
     background 120ms ease,
     border-color 120ms ease,
@@ -782,32 +782,32 @@ textarea[readonly] {
 
 .breaker.fid {
   background:
-    linear-gradient(90deg, rgba(255, 207, 33, 0.1), rgba(255, 207, 33, 0) 34%),
-    linear-gradient(#333a2e, #2b3128);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0) 34%),
+    linear-gradient(#e8e8e3, #fffbe8);
 }
 
 .breaker.neutral {
   background:
-    linear-gradient(90deg, rgba(244, 236, 216, 0.06), rgba(244, 236, 216, 0) 34%),
-    linear-gradient(#333a2e, #2b3128);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 34%),
+    linear-gradient(#e8e8e3, #d4d4ce);
 }
 
 .breaker:hover {
   background:
-    linear-gradient(90deg, rgba(244, 236, 216, 0.1), rgba(244, 236, 216, 0) 38%),
-    linear-gradient(#3a4236, #333a2e);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0) 38%),
+    linear-gradient(#f0f0eb, #dcdcd6);
 }
 
 .breaker.active {
-  border-color: var(--brand);
+  border-color: rgba(10, 10, 10, 0.4);
   background:
-    linear-gradient(90deg, rgba(255, 207, 33, 0.14), rgba(255, 207, 33, 0) 38%),
-    linear-gradient(#3a4236, #333a2e);
-  color: var(--foreground);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0) 38%),
+    linear-gradient(#e8e8e3, #fffbe8);
+  color: #1a1a1a;
   box-shadow:
-    inset 0 1px 0 rgba(244, 236, 216, 0.1),
-    inset -4px 0 0 rgba(0, 0, 0, 0.22),
-    0 0 0 3px rgba(255, 207, 33, 0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset -4px 0 0 rgba(0, 0, 0, 0.08),
+    0 0 0 3px rgba(255, 207, 33, 0.6);
 }
 
 .breaker.dragging {
@@ -821,8 +821,8 @@ textarea[readonly] {
 
 .breaker strong {
   width: 100%;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid rgba(10, 10, 10, 0.18);
+  border-bottom: 1px solid rgba(10, 10, 10, 0.18);
   font-size: 0.88rem;
   line-height: 1.4;
   padding: 1px 0;
@@ -830,7 +830,7 @@ textarea[readonly] {
 
 .breaker-label {
   width: 100%;
-  color: var(--ink-soft);
+  color: rgba(26, 26, 26, 0.6);
   font-size: 0.58rem;
   font-weight: 850;
   line-height: 1;
@@ -842,7 +842,7 @@ textarea[readonly] {
 
 .breaker-label em {
   display: block;
-  color: var(--foreground);
+  color: #1a1a1a;
   font-size: 0.5rem;
   font-style: normal;
   margin-top: 2px;
@@ -853,9 +853,9 @@ textarea[readonly] {
   height: 32px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(10, 10, 10, 0.18);
   border-radius: 5px;
-  background: var(--paper);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .breaker.fid .icon-slot {
@@ -871,7 +871,7 @@ textarea[readonly] {
   width: 20px;
   height: 20px;
   fill: none;
-  stroke: var(--foreground);
+  stroke: #1a1a1a;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.9;
@@ -881,7 +881,7 @@ textarea[readonly] {
   width: 100%;
   align-self: start;
   display: -webkit-box;
-  color: var(--foreground);
+  color: #1a1a1a;
   font-size: 0.53rem;
   font-weight: 700;
   line-height: 1.08;
@@ -1465,9 +1465,9 @@ label {
     border-radius: 4px;
     padding: 4px 3px;
     box-shadow:
-      inset 0 1px 0 rgba(244, 236, 216, 0.1),
-      inset -2px 0 0 rgba(0, 0, 0, 0.2),
-      0 1px 2px rgba(0, 0, 0, 0.3);
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset -2px 0 0 rgba(0, 0, 0, 0.07),
+      0 1px 3px rgba(0, 0, 0, 0.4);
   }
 
   .breaker > * {
@@ -1477,9 +1477,9 @@ label {
 
   .breaker.active {
     box-shadow:
-      inset 0 1px 0 rgba(244, 236, 216, 0.1),
-      inset -2px 0 0 rgba(0, 0, 0, 0.2),
-      0 0 0 2px rgba(255, 207, 33, 0.6);
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset -2px 0 0 rgba(0, 0, 0, 0.07),
+      0 0 0 2px rgba(255, 207, 33, 0.7);
   }
 
   .breaker.drop-target {
