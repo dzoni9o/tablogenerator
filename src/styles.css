@@ -28,6 +28,8 @@
 body {
   margin: 0;
   overflow-x: clip;
+  background-image: radial-gradient(circle, rgba(60, 52, 40, 0.22) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 html,
@@ -1553,6 +1555,7 @@ label {
   :root,
   body {
     background: white;
+    background-image: none;
   }
 
   .project-fields,
