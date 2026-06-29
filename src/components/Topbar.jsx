@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 export function Topbar({
   boardName,
   autosaveLabel,
+  cloudBusy,
   onBoardNameChange,
   onExportJson,
   onImportClick,
   onNewProject,
+  onSaveToCloud,
+  onOpenProjects,
   onShareProject,
   onLogout,
 }) {
@@ -14,9 +17,11 @@ export function Topbar({
   const [smallScreen, setSmallScreen] = useState(() => window.matchMedia?.("(max-width: 900px)").matches ?? false);
   const mobileActions = [
     { title: "Novi projekat", text: "Prazna tabla sa jednim redom", onClick: onNewProject },
-    { title: "Sacuvaj projekat", text: "Preuzmi .tgen fajl", onClick: onExportJson, primary: true },
-    { title: "Ucitaj projekat", text: "Otvori .tgen fajl", onClick: onImportClick },
-    onShareProject ? { title: "Podeli .tgen", text: "Posalji projekat drugoj osobi", onClick: onShareProject } : null,
+    { title: "Sačuvaj u oblak", text: "Čuvaj projekat na svom nalogu", onClick: onSaveToCloud, primary: true },
+    { title: "Moji projekti", text: "Učitaj projekat iz oblaka", onClick: onOpenProjects },
+    { title: "Izvezi .tgen", text: "Preuzmi projekat kao fajl", onClick: onExportJson },
+    { title: "Uvezi .tgen", text: "Otvori .tgen fajl", onClick: onImportClick },
+    onShareProject ? { title: "Podeli .tgen", text: "Pošalji projekat drugoj osobi", onClick: onShareProject } : null,
     { title: "Odjava", text: "Izloguj se iz aplikacije", onClick: onLogout },
   ].filter(Boolean);
 
@@ -68,34 +73,38 @@ export function Topbar({
             <button type="button" className="ghost" onClick={onNewProject}>
               Novi projekat
             </button>
-            <button type="button" className="ghost" onClick={onImportClick}>
-              Ucitaj projekat
+            <button type="button" className="ghost" onClick={onOpenProjects}>
+              Moji projekti
             </button>
-            <button type="button" onClick={onExportJson}>
-              Sacuvaj projekat
+            <button type="button" className="ghost" onClick={onImportClick}>
+              Uvezi .tgen
+            </button>
+            <button type="button" className="ghost" onClick={onExportJson}>
+              Izvezi .tgen
+            </button>
+            <button type="button" disabled={cloudBusy} onClick={onSaveToCloud}>
+              {cloudBusy ? "Čuvanje…" : "Sačuvaj u oblak"}
             </button>
             <button type="button" className="ghost" onClick={onLogout}>
               Odjava
             </button>
           </div>
         </div>
-        {
-          <button
-            type="button"
-            className={`floating-menu-button${menuOpen ? " open" : ""}`}
-            aria-label="Meni"
-            aria-expanded={menuOpen}
-            aria-controls="project-menu"
-            onClick={() => setMenuOpen((current) => !current)}
-          >
-            <span className="hamburger-lines" style={{ width: 24, display: "grid", gap: 4 }} aria-hidden="true">
-              <span style={{ height: 2, borderRadius: 999, background: "currentColor" }} />
-              <span style={{ height: 2, borderRadius: 999, background: "currentColor" }} />
-              <span style={{ height: 2, borderRadius: 999, background: "currentColor" }} />
-              <span style={{ height: 2, borderRadius: 999, background: "currentColor" }} />
-            </span>
-          </button>
-        }
+        <button
+          type="button"
+          className={`floating-menu-button${menuOpen ? " open" : ""}`}
+          aria-label="Meni"
+          aria-expanded={menuOpen}
+          aria-controls="project-menu"
+          onClick={() => setMenuOpen((current) => !current)}
+        >
+          <span className="hamburger-lines" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </span>
+        </button>
       </header>
 
       {smallScreen && menuOpen && (
@@ -112,9 +121,12 @@ export function Topbar({
                   key={action.title}
                   type="button"
                   className={action.primary ? "menu-card primary" : "menu-card"}
+                  disabled={action.onClick === onSaveToCloud && cloudBusy}
                   onClick={() => runAction(action)}
                 >
-                  <span className="menu-card-title">{action.title}</span>
+                  <span className="menu-card-title">
+                    {action.onClick === onSaveToCloud && cloudBusy ? "Čuvanje…" : action.title}
+                  </span>
                   <span className="menu-card-text">{action.text}</span>
                 </button>
               ))}

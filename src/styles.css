@@ -1726,3 +1726,77 @@ label {
   color: var(--paper);
   box-shadow: none;
 }
+
+/* ── Moji projekti modal ──────────────────────────────────────── */
+
+.modal-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  padding: 20px 24px 24px;
+  width: min(100%, 460px);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.projekti-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.projekat-stavka {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--border);
+  background: var(--paper);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.projekat-stavka:hover {
+  background: var(--muted);
+  border-color: var(--brand);
+}
+
+.projekat-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.projekat-naziv {
+  font-weight: 750;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projekat-datum {
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+}
+
+.projekat-brisi {
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.projekat-brisi:hover {
+  opacity: 1;
+  color: var(--emergency);
+}

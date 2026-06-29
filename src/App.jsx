@@ -4,12 +4,14 @@ import { BreakerEditor } from "./components/BreakerEditor";
 import { CatalogModal } from "./components/CatalogModal";
 import { ElementSizeModal } from "./components/ElementSizeModal";
 import { Login } from "./components/Login";
+import { MojiProjektiModal } from "./components/MojiProjektiModal";
 import { PdfExportModal } from "./components/PdfExportModal";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { ProtectionChoiceModal } from "./components/ProtectionChoiceModal";
 import { Topbar } from "./components/Topbar";
 import { useAuth } from "./hooks/useAuth";
 import { useBoardProject } from "./hooks/useBoardProject";
+import { loadProject, saveProject } from "./lib/projekti";
 import { supabase } from "./lib/supabase";
 
 export default function App() {
@@ -23,6 +25,9 @@ export default function App() {
   const [printPhaseBalance, setPrintPhaseBalance] = useState(false);
   const [includePhaseBalanceInPdf, setIncludePhaseBalanceInPdf] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(() => window.matchMedia?.("(max-width: 900px)").matches ?? false);
+  const [cloudId, setCloudId] = useState(null);
+  const [cloudBusy, setCloudBusy] = useState(false);
+  const [projektiOpen, setProjektiOpen] = useState(false);
   const project = useBoardProject();
   const autosaveLabel = project.autosavedAt
     ? `Autosave ${new Date(project.autosavedAt).toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" })}`
@@ -46,10 +51,13 @@ export default function App() {
       <Topbar
         boardName={project.boardName}
         autosaveLabel={autosaveLabel}
+        cloudBusy={cloudBusy}
         onBoardNameChange={project.setBoardName}
         onExportJson={project.exportJson}
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
+        onSaveToCloud={saveToCloud}
+        onOpenProjects={() => setProjektiOpen(true)}
         onShareProject={shareProject}
         onLogout={() => supabase.auth.signOut()}
       />
@@ -159,6 +167,13 @@ export default function App() {
         />
       )}
 
+      {projektiOpen && (
+        <MojiProjektiModal
+          onLoad={handleLoadFromCloud}
+          onClose={() => setProjektiOpen(false)}
+        />
+      )}
+
       {project.customElementTargetRow && (
         <ElementSizeModal
           onCancel={() => project.setCustomElementTargetRow(null)}
@@ -192,6 +207,39 @@ export default function App() {
       )}
     </main>
   );
+
+  async function saveToCloud() {
+    try {
+      setCloudBusy(true);
+      setExportError("");
+      const newId = await saveProject({
+        id: cloudId,
+        boardName: project.boardName,
+        projectInfo: project.projectInfo,
+        rows: project.rows,
+      });
+      setCloudId(newId);
+      setSaveMessage("Projekat je sačuvan u oblak.");
+      window.setTimeout(() => setSaveMessage(""), 3000);
+    } catch {
+      setExportError("Čuvanje u oblak nije uspelo. Pokušaj ponovo.");
+    } finally {
+      setCloudBusy(false);
+    }
+  }
+
+  async function handleLoadFromCloud(id) {
+    try {
+      setProjektiOpen(false);
+      const data = await loadProject(id);
+      project.loadProjectData(data);
+      setCloudId(id);
+      setSaveMessage("Projekat je učitan.");
+      window.setTimeout(() => setSaveMessage(""), 3000);
+    } catch {
+      setExportError("Učitavanje projekta nije uspelo.");
+    }
+  }
 
   async function exportPdf(options = {}) {
     try {

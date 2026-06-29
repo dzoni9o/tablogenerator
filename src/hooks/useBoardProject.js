@@ -456,6 +456,18 @@ export function useBoardProject() {
     setCustomElementTargetRow(null);
   }
 
+  function loadProjectData({ boardName: name, projectInfo: info, rows: newRows }) {
+    setBoardName(name ?? defaultBoardName);
+    setProjectInfo(info ?? defaultProjectInfo);
+    setRows(newRows ?? createBlankRows());
+    setPastRows([]);
+    setFutureRows([]);
+    setSelected(newRows?.flatMap((row) => row.breakers)[0]?.id ?? null);
+    setEditorOpen(false);
+    setCustomElementTargetRow(null);
+    setImportError("");
+  }
+
   function undo() {
     setPastRows((past) => {
       if (past.length === 0) return past;
@@ -534,6 +546,7 @@ export function useBoardProject() {
     shareJson,
     importJsonFile,
     newProject,
+    loadProjectData,
     undo,
     redo,
   };
