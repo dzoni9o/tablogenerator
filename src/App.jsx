@@ -10,6 +10,7 @@ import { ProtectionChoiceModal } from "./components/ProtectionChoiceModal";
 import { Topbar } from "./components/Topbar";
 import { useAuth } from "./hooks/useAuth";
 import { useBoardProject } from "./hooks/useBoardProject";
+import { supabase } from "./lib/supabase";
 
 export default function App() {
   const { session, loading } = useAuth();
@@ -50,6 +51,7 @@ export default function App() {
         onImportClick={() => fileInputRef.current?.click()}
         onNewProject={project.newProject}
         onShareProject={shareProject}
+        onLogout={() => supabase.auth.signOut()}
       />
 
       <aside className="history-dock" aria-label="Istorija izmena">

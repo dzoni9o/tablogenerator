@@ -8,6 +8,7 @@ export function Topbar({
   onImportClick,
   onNewProject,
   onShareProject,
+  onLogout,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [smallScreen, setSmallScreen] = useState(() => window.matchMedia?.("(max-width: 900px)").matches ?? false);
@@ -16,6 +17,7 @@ export function Topbar({
     { title: "Sacuvaj projekat", text: "Preuzmi .tgen fajl", onClick: onExportJson, primary: true },
     { title: "Ucitaj projekat", text: "Otvori .tgen fajl", onClick: onImportClick },
     onShareProject ? { title: "Podeli .tgen", text: "Posalji projekat drugoj osobi", onClick: onShareProject } : null,
+    { title: "Odjava", text: "Izloguj se iz aplikacije", onClick: onLogout },
   ].filter(Boolean);
 
   useEffect(() => {
@@ -72,27 +74,15 @@ export function Topbar({
             <button type="button" onClick={onExportJson}>
               Sacuvaj projekat
             </button>
+            <button type="button" className="ghost" onClick={onLogout}>
+              Odjava
+            </button>
           </div>
         </div>
         {
           <button
             type="button"
             className={`floating-menu-button${menuOpen ? " open" : ""}`}
-            style={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-              width: 50,
-              height: 50,
-              zIndex: 3,
-              placeItems: "center",
-              borderRadius: 999,
-              background: menuOpen ? "#ffd60a" : "#0a0a0a",
-              border: "1px solid rgba(10, 10, 10, 0.16)",
-              color: menuOpen ? "#0a0a0a" : "#ffffff",
-              boxShadow: "0 12px 34px rgba(10, 10, 10, 0.22), 0 0 0 4px rgba(255, 214, 10, 0.14)",
-              padding: 0,
-            }}
             aria-label="Meni"
             aria-expanded={menuOpen}
             aria-controls="project-menu"
