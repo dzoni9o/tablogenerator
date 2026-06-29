@@ -3,13 +3,16 @@ import { Board } from "./components/Board";
 import { BreakerEditor } from "./components/BreakerEditor";
 import { CatalogModal } from "./components/CatalogModal";
 import { ElementSizeModal } from "./components/ElementSizeModal";
+import { Login } from "./components/Login";
 import { PdfExportModal } from "./components/PdfExportModal";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { ProtectionChoiceModal } from "./components/ProtectionChoiceModal";
 import { Topbar } from "./components/Topbar";
+import { useAuth } from "./hooks/useAuth";
 import { useBoardProject } from "./hooks/useBoardProject";
 
 export default function App() {
+  const { session, loading } = useAuth();
   const boardRef = useRef(null);
   const fileInputRef = useRef(null);
   const [exportError, setExportError] = useState("");
@@ -33,6 +36,9 @@ export default function App() {
     query.addEventListener("change", update);
     return () => query.removeEventListener("change", update);
   }, []);
+
+  if (loading) return null;
+  if (!session) return <Login />;
 
   return (
     <main className="app">
