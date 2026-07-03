@@ -14,6 +14,8 @@ import { useBoardProject } from "./hooks/useBoardProject";
 import { loadProject, saveProject } from "./lib/projekti";
 import { supabase } from "./lib/supabase";
 
+const AUTO_PROJECT_ID = new URLSearchParams(window.location.search).get('project_id');
+
 export default function App() {
   const { session, loading } = useAuth();
   const boardRef = useRef(null);
@@ -42,6 +44,12 @@ export default function App() {
     query.addEventListener("change", update);
     return () => query.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    if (!session || !AUTO_PROJECT_ID) return;
+    window.history.replaceState({}, '', window.location.pathname);
+    handleLoadFromCloud(AUTO_PROJECT_ID);
+  }, [session]);
 
   if (loading) return null;
   if (!session) return <Login />;
