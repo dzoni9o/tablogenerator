@@ -172,10 +172,12 @@ function drawMetaPanel(context, projectInfo) {
   const cards = items;
   const gap = 3;
   const columns = 3;
-  const cardWidth = (context.contentWidth - gap * (columns - 1)) / columns;
+  const padding = 4;
+  const innerWidth = context.contentWidth - padding * 2;
+  const cardWidth = (innerWidth - gap * (columns - 1)) / columns;
   const rows = Math.ceil(cards.length / columns);
-  const cardHeight = 16;
-  const panelHeight = rows * cardHeight + (rows - 1) * gap + 10;
+  const cardHeight = 17;
+  const panelHeight = rows * cardHeight + (rows - 1) * gap + padding * 2;
 
   ensureSpace(context, panelHeight);
 
@@ -187,16 +189,16 @@ function drawMetaPanel(context, projectInfo) {
   cards.forEach(([label, value], index) => {
     const column = index % columns;
     const row = Math.floor(index / columns);
-    const x = margin + 5 + column * (cardWidth + gap);
-    const y = context.y + 5 + row * (cardHeight + gap);
+    const x = margin + padding + column * (cardWidth + gap);
+    const y = context.y + padding + row * (cardHeight + gap);
 
     setDraw(doc, colors.line);
     setFill(doc, colors.muted);
-    doc.roundedRect(x, y, cardWidth - 2, cardHeight, 2, 2, "FD");
+    doc.roundedRect(x, y, cardWidth, cardHeight, 2, 2, "FD");
     setFont(doc, 5.5, "bold", colors.softInk);
     doc.text(cleanText(label).toUpperCase(), x + 3, y + 5);
-    setFont(doc, 7, "bold", colors.ink);
-    drawWrapped(doc, cleanText(value), x + 3, y + 10.2, cardWidth - 8, 3.1, 2);
+    setFont(doc, 7.5, "bold", colors.ink);
+    drawWrapped(doc, cleanText(value), x + 3, y + 11.5, cardWidth - 6, 3.2, 2);
   });
 
   context.y += panelHeight + 6;
