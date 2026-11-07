@@ -107,7 +107,7 @@ function drawCover(context, projectInfo) {
     // Phone left, website right (+200% → 16.5pt, bold)
     if (companyPhone || companyWebsite) {
       const contactY = logoY + logoSize + 11;
-      setFont(doc, 10, "bold", colors.softInk);
+      setFont(doc, 7, "bold", colors.softInk);
       if (companyPhone) doc.text(companyPhone, margin + 3, contactY, { align: "left" });
       if (companyWebsite) doc.text(companyWebsite, margin + brandWidth - 3, contactY, { align: "right" });
     }
