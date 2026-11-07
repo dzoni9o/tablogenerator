@@ -79,10 +79,57 @@ function drawCover(context, projectInfo) {
   setFill(doc, colors.white);
   doc.roundedRect(margin, context.y, contentWidth, headerHeight, 3, 3, "FD");
 
+  // Left brand panel
   setFill(doc, [38, 38, 38]);
   doc.roundedRect(margin, context.y, brandWidth, headerHeight, 3, 3, "F");
-  setFont(doc, 16, "bold", colors.white);
-  doc.text("nikvolt", margin + brandWidth / 2, context.y + 15, { align: "center" });
+
+  const hasLogo = projectInfo.companyLogo && typeof projectInfo.companyLogo === "string" && projectInfo.companyLogo.startsWith("data:");
+  const companyName = projectInfo.companyName?.trim() || "";
+  const companyWebsite = projectInfo.companyWebsite?.trim() || "";
+  const companyPhone = projectInfo.companyPhone?.trim() || "";
+
+  if (hasLogo) {
+    // Draw logo image centered in the left panel, leaving room for text below if present
+    const logoX = margin + 3;
+    const logoY = context.y + 3;
+    const logoMaxW = brandWidth - 6;
+    const textLines = [companyName, companyWebsite, companyPhone].filter(Boolean);
+    const logoMaxH = textLines.length > 0 ? headerHeight - 14 : headerHeight - 6;
+    try {
+      const format = projectInfo.companyLogo.includes("image/png") ? "PNG" : "JPEG";
+      doc.addImage(projectInfo.companyLogo, format, logoX, logoY, logoMaxW, logoMaxH, undefined, "FAST");
+    } catch {
+      // Logo failed to render — fall through to text-only
+    }
+    // Company text below logo
+    if (textLines.length > 0) {
+      let ty = context.y + headerHeight - (textLines.length * 3.8) - 1;
+      setFont(doc, 5.5, "normal", colors.white);
+      for (const line of textLines) {
+        doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
+        ty += 3.8;
+      }
+    }
+  } else if (companyName) {
+    // No logo — show company name + contact
+    const textLines = [companyWebsite, companyPhone].filter(Boolean);
+    const nameY = textLines.length > 0 ? context.y + 13 : context.y + headerHeight / 2 + 1;
+    setFont(doc, 9, "bold", colors.white);
+    doc.text(companyName, margin + brandWidth / 2, nameY, { align: "center", maxWidth: brandWidth - 4 });
+    if (textLines.length > 0) {
+      setFont(doc, 5.5, "normal", colors.white);
+      let ty = nameY + 5;
+      for (const line of textLines) {
+        doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
+        ty += 3.8;
+      }
+    }
+  } else {
+    // Fallback: generic branding
+    setFont(doc, 16, "bold", colors.white);
+    doc.text("nikvolt", margin + brandWidth / 2, context.y + 15, { align: "center" });
+  }
+
   setFill(doc, colors.brand);
   doc.rect(margin, context.y + headerHeight - 4, brandWidth, 4, "F");
 
