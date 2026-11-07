@@ -89,8 +89,8 @@ function drawCover(context, projectInfo) {
     setFill(doc, colors.white);
     doc.roundedRect(margin, context.y, brandWidth, headerHeight, 3, 3, "F");
 
-    // Logo image: square in the top portion
-    const logoSize = 20;
+    // Logo image — 14mm so text fits below (panel is 30mm usable before yellow stripe)
+    const logoSize = 14;
     const logoX = margin + (brandWidth - logoSize) / 2;
     const logoY = context.y + 3;
     try {
@@ -101,7 +101,7 @@ function drawCover(context, projectInfo) {
     // Company name + contact below the logo
     const textLines = [companyName, companyWebsite, companyPhone].filter(Boolean);
     if (textLines.length > 0) {
-      let ty = logoY + logoSize + 3.5;
+      let ty = logoY + logoSize + 2.5;
       setFont(doc, 5, "bold", colors.ink);
       doc.text(textLines[0], margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
       setFont(doc, 4.5, "normal", colors.softInk);
