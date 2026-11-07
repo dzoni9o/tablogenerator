@@ -89,8 +89,8 @@ function drawCover(context, projectInfo) {
     setFill(doc, colors.white);
     doc.roundedRect(margin, context.y, brandWidth, headerHeight, 3, 3, "F");
 
-    // Logo image — 14mm so text fits below (panel is 30mm usable before yellow stripe)
-    const logoSize = 14;
+    // Logo image — 12mm at top
+    const logoSize = 12;
     const logoX = margin + (brandWidth - logoSize) / 2;
     const logoY = context.y + 3;
     try {
@@ -98,17 +98,18 @@ function drawCover(context, projectInfo) {
       doc.addImage(projectInfo.companyLogo, format, logoX, logoY, logoSize, logoSize, undefined, "FAST");
     } catch { /* fall through */ }
 
-    // Company name + contact below the logo
-    const textLines = [companyName, companyWebsite, companyPhone].filter(Boolean);
-    if (textLines.length > 0) {
-      let ty = logoY + logoSize + 2.5;
-      setFont(doc, 5, "bold", colors.ink);
-      doc.text(textLines[0], margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
-      setFont(doc, 4.5, "normal", colors.softInk);
-      for (const line of textLines.slice(1)) {
-        ty += 3.5;
-        doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
-      }
+    // Company name centered
+    if (companyName) {
+      setFont(doc, 8, "bold", colors.ink);
+      doc.text(companyName, margin + brandWidth / 2, logoY + logoSize + 4, { align: "center", maxWidth: brandWidth - 4 });
+    }
+
+    // Phone left, website right
+    if (companyPhone || companyWebsite) {
+      const contactY = logoY + logoSize + 9;
+      setFont(doc, 5.5, "normal", colors.softInk);
+      if (companyPhone) doc.text(companyPhone, margin + 3, contactY, { align: "left" });
+      if (companyWebsite) doc.text(companyWebsite, margin + brandWidth - 3, contactY, { align: "right" });
     }
 
     setFill(doc, colors.brand);
