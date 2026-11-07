@@ -98,16 +98,16 @@ function drawCover(context, projectInfo) {
       doc.addImage(projectInfo.companyLogo, format, logoX, logoY, logoSize, logoSize, undefined, "FAST");
     } catch { /* fall through */ }
 
-    // Company name centered
+    // Company name centered (+30% → 10.4pt)
     if (companyName) {
-      setFont(doc, 8, "bold", colors.ink);
-      doc.text(companyName, margin + brandWidth / 2, logoY + logoSize + 4, { align: "center", maxWidth: brandWidth - 4 });
+      setFont(doc, 10.4, "bold", colors.ink);
+      doc.text(companyName, margin + brandWidth / 2, logoY + logoSize + 4.5, { align: "center", maxWidth: brandWidth - 4 });
     }
 
-    // Phone left, website right
+    // Phone left, website right (+200% → 16.5pt, bold)
     if (companyPhone || companyWebsite) {
-      const contactY = logoY + logoSize + 9;
-      setFont(doc, 5.5, "normal", colors.softInk);
+      const contactY = logoY + logoSize + 11;
+      setFont(doc, 16.5, "bold", colors.softInk);
       if (companyPhone) doc.text(companyPhone, margin + 3, contactY, { align: "left" });
       if (companyWebsite) doc.text(companyWebsite, margin + brandWidth - 3, contactY, { align: "right" });
     }
