@@ -480,6 +480,30 @@ textarea[readonly] {
   grid-column: 1 / -1;
 }
 
+.project-fields-divider {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  margin: 4px 0;
+}
+
+.logo-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.logo-preview {
+  height: 48px;
+  max-width: 120px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--paper-soft, #fff);
+  padding: 2px;
+}
+
 .board {
   width: 100%;
   max-width: 100%;

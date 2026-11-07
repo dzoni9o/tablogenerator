@@ -6,4 +6,8 @@ export const defaultProjectInfo = {
   documentNumber: "",
   date: new Date().toISOString().slice(0, 10),
   note: "",
+  companyName: "",
+  companyWebsite: "",
+  companyPhone: "",
+  companyLogo: "",
 };
