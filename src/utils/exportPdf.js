@@ -342,39 +342,50 @@ function drawBreakerCard(context, breaker, x, y, width, height) {
   const innerX = x + 1;
   const innerWidth = Math.max(1, width - 2);
 
+  // Shadow
   setFill(doc, [224, 224, 218]);
   doc.roundedRect(x + 0.45, y + 0.55, width, height, 1.35, 1.35, "F");
 
+  // Card frame
   setDraw(doc, [184, 190, 198]);
   setFill(doc, colors.white);
   doc.roundedRect(x, y, width, height, 1.35, 1.35, "FD");
 
+  // Bottom colored section — starts at y+10
   setFill(doc, bottomFill);
-  doc.rect(x + 0.25, y + height * 0.46, width - 0.5, height * 0.54 - 0.4, "F");
+  doc.rect(x + 0.25, y + 10, width - 0.5, height - 10 - 0.4, "F");
 
+  // Right edge highlight
   setFill(doc, [246, 246, 242]);
   doc.rect(x + width - 0.85, y + 0.8, 0.45, height - 1.6, "F");
 
+  // Separator lines
   setDraw(doc, colors.line);
-  doc.line(innerX, y + 5.2, x + width - 1, y + 5.2);
-  doc.line(innerX, y + 8.1, x + width - 1, y + 8.1);
+  doc.line(innerX, y + 5, x + width - 1, y + 5);
+  doc.line(innerX, y + 10, x + width - 1, y + 10);
 
-  drawSingleLine(doc, cleanText(breaker.amp || "-"), innerX, y + 7.1, innerWidth, 7.2, 4.6, "bold", "center");
-  drawSingleLine(doc, cleanText(breaker.label || "-"), innerX, y + 12.2, innerWidth, 4.3, 2.8, "bold", "center");
+  // Amp (B16, C20…) in top section
+  drawSingleLine(doc, cleanText(breaker.amp || "-"), innerX, y + 3.6, innerWidth, 7.2, 4.6, "bold", "center");
 
-  setDraw(doc, colors.line);
-  setFill(doc, colors.white);
+  // Label (F8, F9…) in middle section
+  drawSingleLine(doc, cleanText(breaker.label || "-"), innerX, y + 8.3, innerWidth, 4.5, 3, "bold", "center");
+
+  // Icon box — centered horizontally, anchored near top of bottom section
   const iconBoxSize = Math.min(6.5, Math.max(5.2, width * 0.52));
   const iconSize = iconBoxSize * 0.78;
   const iconX = x + width / 2 - iconBoxSize / 2;
-  const iconY = y + 16.5;
+  const iconY = y + 12;
+  setDraw(doc, colors.line);
+  setFill(doc, colors.white);
   doc.roundedRect(iconX, iconY, iconBoxSize, iconBoxSize, 1.05, 1.05, "FD");
   drawConsumerIcon(doc, breaker.icon, x + width / 2, iconY + iconBoxSize / 2, iconSize);
 
+  // Description below icon
   const load = breaker.loadW || legacyLoadWatts(breaker);
   const description = load ? `${load} W - ${breaker.description || "Bez opisa"}` : breaker.description || "Bez opisa";
+  const descY = iconY + iconBoxSize + 2;
   setFont(doc, width < 12 ? 3 : 3.4, "bold", colors.ink);
-  drawWrapped(doc, cleanText(description), innerX, y + 25.2, innerWidth, width < 12 ? 1.7 : 1.9, 2, "center");
+  drawWrapped(doc, cleanText(description), innerX, descY, innerWidth, width < 12 ? 1.7 : 1.9, 3, "center");
 }
 
 function layoutBreakers(breakers, railX, railY, railWidth) {
