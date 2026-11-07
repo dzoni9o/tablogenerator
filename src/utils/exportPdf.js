@@ -75,63 +75,73 @@ function drawCover(context, projectInfo) {
   const titleX = margin + brandWidth + 8;
   const titleWidth = contentWidth - brandWidth - 8;
 
-  setDraw(doc, colors.line);
-  setFill(doc, colors.white);
-  doc.roundedRect(margin, context.y, contentWidth, headerHeight, 3, 3, "FD");
-
-  // Left brand panel
-  setFill(doc, [38, 38, 38]);
-  doc.roundedRect(margin, context.y, brandWidth, headerHeight, 3, 3, "F");
-
   const hasLogo = projectInfo.companyLogo && typeof projectInfo.companyLogo === "string" && projectInfo.companyLogo.startsWith("data:");
   const companyName = projectInfo.companyName?.trim() || "";
   const companyWebsite = projectInfo.companyWebsite?.trim() || "";
   const companyPhone = projectInfo.companyPhone?.trim() || "";
 
+  setDraw(doc, colors.line);
+  setFill(doc, colors.white);
+  doc.roundedRect(margin, context.y, contentWidth, headerHeight, 3, 3, "FD");
+
   if (hasLogo) {
-    // Draw logo image centered in the left panel, leaving room for text below if present
-    const logoX = margin + 3;
+    // White left panel for logo
+    setFill(doc, colors.white);
+    doc.roundedRect(margin, context.y, brandWidth, headerHeight, 3, 3, "F");
+
+    // Logo image: square in the top portion
+    const logoSize = 20;
+    const logoX = margin + (brandWidth - logoSize) / 2;
     const logoY = context.y + 3;
-    const logoMaxW = brandWidth - 6;
-    const textLines = [companyName, companyWebsite, companyPhone].filter(Boolean);
-    const logoMaxH = textLines.length > 0 ? headerHeight - 14 : headerHeight - 6;
     try {
       const format = projectInfo.companyLogo.includes("image/png") ? "PNG" : "JPEG";
-      doc.addImage(projectInfo.companyLogo, format, logoX, logoY, logoMaxW, logoMaxH, undefined, "FAST");
-    } catch {
-      // Logo failed to render — fall through to text-only
-    }
-    // Company text below logo
-    if (textLines.length > 0) {
-      let ty = context.y + headerHeight - (textLines.length * 3.8) - 1;
-      setFont(doc, 5.5, "normal", colors.white);
-      for (const line of textLines) {
-        doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
-        ty += 3.8;
-      }
-    }
-  } else if (companyName) {
-    // No logo — show company name + contact
-    const textLines = [companyWebsite, companyPhone].filter(Boolean);
-    const nameY = textLines.length > 0 ? context.y + 13 : context.y + headerHeight / 2 + 1;
-    setFont(doc, 9, "bold", colors.white);
-    doc.text(companyName, margin + brandWidth / 2, nameY, { align: "center", maxWidth: brandWidth - 4 });
-    if (textLines.length > 0) {
-      setFont(doc, 5.5, "normal", colors.white);
-      let ty = nameY + 5;
-      for (const line of textLines) {
-        doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
-        ty += 3.8;
-      }
-    }
-  } else {
-    // Fallback: generic branding
-    setFont(doc, 16, "bold", colors.white);
-    doc.text("nikvolt", margin + brandWidth / 2, context.y + 15, { align: "center" });
-  }
+      doc.addImage(projectInfo.companyLogo, format, logoX, logoY, logoSize, logoSize, undefined, "FAST");
+    } catch { /* fall through */ }
 
-  setFill(doc, colors.brand);
-  doc.rect(margin, context.y + headerHeight - 4, brandWidth, 4, "F");
+    // Company name + contact below the logo
+    const textLines = [companyName, companyWebsite, companyPhone].filter(Boolean);
+    if (textLines.length > 0) {
+      let ty = logoY + logoSize + 3.5;
+      setFont(doc, 5, "bold", colors.ink);
+      doc.text(textLines[0], margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
+      setFont(doc, 4.5, "normal", colors.softInk);
+      for (const line of textLines.slice(1)) {
+        ty += 3.5;
+        doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
+      }
+    }
+
+    setFill(doc, colors.brand);
+    doc.rect(margin, context.y + headerHeight - 4, brandWidth, 4, "F");
+    // Left border to separate from white content
+    setDraw(doc, colors.line);
+    doc.line(margin + brandWidth, context.y, margin + brandWidth, context.y + headerHeight);
+  } else {
+    // Dark left panel (no logo)
+    setFill(doc, [38, 38, 38]);
+    doc.roundedRect(margin, context.y, brandWidth, headerHeight, 3, 3, "F");
+
+    if (companyName) {
+      const textLines = [companyWebsite, companyPhone].filter(Boolean);
+      const nameY = textLines.length > 0 ? context.y + 13 : context.y + headerHeight / 2 + 1;
+      setFont(doc, 9, "bold", colors.white);
+      doc.text(companyName, margin + brandWidth / 2, nameY, { align: "center", maxWidth: brandWidth - 4 });
+      if (textLines.length > 0) {
+        setFont(doc, 5.5, "normal", colors.white);
+        let ty = nameY + 5;
+        for (const line of textLines) {
+          doc.text(line, margin + brandWidth / 2, ty, { align: "center", maxWidth: brandWidth - 4 });
+          ty += 3.8;
+        }
+      }
+    } else {
+      setFont(doc, 16, "bold", colors.white);
+      doc.text("nikvolt", margin + brandWidth / 2, context.y + 15, { align: "center" });
+    }
+
+    setFill(doc, colors.brand);
+    doc.rect(margin, context.y + headerHeight - 4, brandWidth, 4, "F");
+  }
 
   setFont(doc, 6.4, "bold", colors.softInk);
   doc.text("PROFESIONALNI IZVESTAJ ELEKTRO TABLE", titleX, context.y + 8);
